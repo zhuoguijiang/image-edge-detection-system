@@ -1,0 +1,1536 @@
+Efinity Synthesis report for project dbg_261019_2
+Version: 2026.1.132.4.5
+Generated at: Oct 27, 2026 14:23:10
+Copyright (C) 2013 - 2026  All rights reserved.
+
+Top-level Entity Name : system_dbg_top
+
+family : Titanium
+device : Ti60F225
+project : dbg_261019_2
+root : system_dbg_top
+binary-db : outflow\dbg_261019_2.vdb
+insert-ios : 0
+insert-gclk : 0
+max-carry-cascade : 320
+max-dsp-cascade : 16
+max_mult : -1
+max_ram : -1
+mode : speed
+num_srl : -1
+output-dir : outflow
+proj_curr_path : C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2
+project : dbg_261019_2
+project-xml : C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\dbg_261019_2.xml
+root : system_dbg_top
+work-dir : work_syn
+write-efx-verilog : outflow\dbg_261019_2.map.v
+
+File List:
+
+C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\system_dbg_top.v
+C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\dbg\dbg_led_bank.v
+C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\video_frame_store.v
+C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v
+C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\split_mux.v
+C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\key_debounce.v
+C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\threshold_reg.v
+C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\async_fifo.v
+C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\alg_top.v
+C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\line_buffer_3x3.v
+C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\debayer.v
+C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\grayscale.v
+C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\sort3.v
+C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\median3x3.v
+C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\sobel.v
+C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\nms3x3.v
+C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\edge_link3x3.v
+C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\gaussian5x5.v
+C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\gaussian3x3.v
+C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\canny_nms.v
+C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\canny_nms_interp.v
+C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\canny_hysteresis.v
+C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\scharr.v
+C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\measurement_timing.v
+C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\rgb565_preview_store.v
+C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\rgb_video_delay.v
+C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\camera_line_unpack.v
+C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\edge_frame_store.v
+C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\display\pattern_gen.v
+C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\vga_timing.v
+C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\hdmi\rgb2dvi.v
+C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\hdmi\tmds_channel.v
+C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\camera\i2c_timing_ctrl_16bit.v
+C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\I2C_SC2210_640x480_4Lanes_Config.v
+C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\ip\csi_rx\csi_rx.sv
+
+### ### Report Section Start ### ###
+
+"MEM|SYN-0677" : ... Memory 'ram' is not initialized, assuming empty initial contents. (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\ip\csi_rx\csi_rx.sv:6751)
+"MEM|SYN-0677" : ... Memory 'ram' is not initialized, assuming empty initial contents. (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\ip\csi_rx\csi_rx.sv:6751)
+"MEM|SYN-0677" : ... Memory 'mem' is not initialized, assuming empty initial contents. (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\camera_line_unpack.v:45)
+"MEM|SYN-0677" : ... Memory 'lb1' is not initialized, assuming empty initial contents. (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\line_buffer_3x3.v:36)
+"MEM|SYN-0677" : ... Memory 'lb2' is not initialized, assuming empty initial contents. (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\line_buffer_3x3.v:37)
+"MEM|SYN-0677" : ... Memory 'mem' is not initialized, assuming empty initial contents. (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\rgb565_preview_store.v:191)
+"MEM|SYN-0677" : ... Memory 'lb1' is not initialized, assuming empty initial contents. (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\line_buffer_3x3.v:36)
+"MEM|SYN-0677" : ... Memory 'lb2' is not initialized, assuming empty initial contents. (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\line_buffer_3x3.v:37)
+"MEM|SYN-0677" : ... Memory 'lb1' is not initialized, assuming empty initial contents. (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\gaussian5x5.v:39)
+"MEM|SYN-0677" : ... Memory 'lb2' is not initialized, assuming empty initial contents. (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\gaussian5x5.v:40)
+"MEM|SYN-0677" : ... Memory 'lb3' is not initialized, assuming empty initial contents. (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\gaussian5x5.v:41)
+"MEM|SYN-0677" : ... Memory 'lb4' is not initialized, assuming empty initial contents. (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\gaussian5x5.v:42)
+"MEM|SYN-0677" : ... Memory 'lb1' is not initialized, assuming empty initial contents. (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\line_buffer_3x3.v:36)
+"MEM|SYN-0677" : ... Memory 'lb2' is not initialized, assuming empty initial contents. (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\line_buffer_3x3.v:37)
+"MEM|SYN-0677" : ... Memory 'lb1' is not initialized, assuming empty initial contents. (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\line_buffer_3x3.v:36)
+"MEM|SYN-0677" : ... Memory 'lb2' is not initialized, assuming empty initial contents. (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\line_buffer_3x3.v:37)
+"MEM|SYN-0677" : ... Memory 'lb' is not initialized, assuming empty initial contents. (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\canny_hysteresis.v:55)
+"MEM|SYN-0677" : ... Memory 'lb1' is not initialized, assuming empty initial contents. (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\line_buffer_3x3.v:36)
+"MEM|SYN-0677" : ... Memory 'lb2' is not initialized, assuming empty initial contents. (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\line_buffer_3x3.v:37)
+"MEM|SYN-0677" : ... Memory 'mem' is not initialized, assuming empty initial contents. (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\edge_frame_store.v:55)
+
+### ### EFX_FF CE enables (begin) ### ### ###
+
+Total number of enable signals: 157
+Total number of FFs with enable signals: 1870
++----------------------------------------------------------------------------------------------+------------------+
+|CE Signal                                                                                     |Number of FF loads|
++----------------------------------------------------------------------------------------------+------------------+
+|ceg_net362                                                                                    |              174 |
+|cam_pix_vs                                                                                    |              122 |
+|ceg_net385                                                                                    |               96 |
+|u_alg_full/g_canny.c_sob_valid                                                                |               88 |
+|pix_vsync                                                                                     |               72 |
+|u_color_store/n1307                                                                           |               72 |
+|u_alg_full/gray_valid                                                                         |               66 |
+|ceg_net370                                                                                    |               66 |
+|u_alg_full/g_canny.gauss_valid                                                                |               64 |
+|u_csi_rx/u_efx_csi2_rx/csi2_rx_top_inst/genblk3.byte2pixel_inst/valid_depack_64bit            |               64 |
+|ceg_net390                                                                                    |               63 |
+|u_i2c/n615                                                                                    |               53 |
+|~u_csi_rx/u_efx_csi2_rx/csi2_rx_top_inst/depacketizer_inst/n3243                              |               30 |
+|ceg_net563                                                                                    |               29 |
+|ceg_net7                                                                                      |               25 |
+|u_csi_rx/u_efx_csi2_rx/csi2_rx_top_inst/genblk3.byte2pixel_inst/u1_inst/rd_en_int             |               24 |
+|u_csi_rx/u_efx_csi2_rx/csi2_rx_top_inst/depacketizer_inst/check_ecc                           |               24 |
+|ceg_net10                                                                                     |               22 |
+|u_alg_full/g_canny.hyst_valid                                                                 |               22 |
+|ceg_net381                                                                                    |               20 |
+|ceg_net431                                                                                    |               20 |
+|ceg_net434                                                                                    |               19 |
+|ceg_net437                                                                                    |               19 |
+|u_i2c/LessThan_6/n30                                                                          |               17 |
+|~u_i2c/n311                                                                                   |               17 |
+|ceg_net2                                                                                      |               16 |
+|n2281                                                                                         |               16 |
+|ceg_net360                                                                                    |               16 |
+|u_alg_full/g_canny.u_lbgc/n1537                                                               |               16 |
+|u_alg_full/u_lb2/n1237                                                                        |               16 |
+|ceg_net365                                                                                    |               16 |
+|u_alg_full/g_canny.g_link.u_link_c/u_lb/n639                                                  |               16 |
+|u_alg_full/g_canny.u_lb3c/n1237                                                               |               16 |
+|ceg_net388                                                                                    |               16 |
+|ceg_net56                                                                                     |               14 |
+|ceg_net405                                                                                    |               14 |
+|u_csi_rx/u_efx_csi2_rx/csi2_rx_top_inst/LessThan_10/n26                                       |               13 |
+|ceg_net428                                                                                    |               13 |
+|ceg_net426                                                                                    |               13 |
+|ceg_net23                                                                                     |               13 |
+|ceg_net254                                                                                    |               12 |
+|ceg_net291                                                                                    |               12 |
+|u_csi_rx/u_efx_csi2_rx/csi2_rx_top_inst/genblk3.byte2pixel_inst/u1_inst/wr_en_int             |               12 |
+|ceg_net180                                                                                    |               12 |
+|ceg_net217                                                                                    |               12 |
+|ceg_net419                                                                                    |               11 |
+|u_alg_full/g_canny.n_valid                                                                    |               11 |
+|u_color_store/u_timing/equal_6/n21                                                            |               11 |
+|u_color_store/n2103                                                                           |               11 |
+|u_csi_rx/u_efx_csi2_rx/csi2_rx_top_inst/genblk2.lane_aligner_inst/genblk1[2].u1_inst/rd_en_int|               10 |
+|u_csi_rx/u_efx_csi2_rx/csi2_rx_top_inst/genblk2.lane_aligner_inst/genblk1[0].u1_inst/rd_en_int|               10 |
+|u_csi_rx/u_efx_csi2_rx/csi2_rx_top_inst/genblk2.lane_aligner_inst/genblk1[3].u1_inst/rd_en_int|               10 |
+|u_csi_rx/u_efx_csi2_rx/csi2_rx_top_inst/genblk2.lane_aligner_inst/genblk1[1].u1_inst/rd_en_int|               10 |
+|ceg_net357                                                                                    |                8 |
+|ceg_net373                                                                                    |                8 |
+|ceg_net321                                                                                    |                8 |
+|ceg_net333                                                                                    |                8 |
+|ceg_net345                                                                                    |                8 |
+|u_cam_unpack/n437                                                                             |                8 |
+|ceg_net417                                                                                    |                7 |
+|ceg_net408                                                                                    |                7 |
+|ceg_net377                                                                                    |                7 |
+|ceg_net403                                                                                    |                6 |
+|key_up_p                                                                                      |                6 |
+|ceg_net455                                                                                    |                6 |
+|u_csi_rx/u_efx_csi2_rx/csi2_rx_top_inst/genblk2.lane_aligner_inst/genblk1[1].u1_inst/wr_en_int|                5 |
+|u_csi_rx/u_efx_csi2_rx/csi2_rx_top_inst/genblk2.lane_aligner_inst/genblk1[2].u1_inst/wr_en_int|                5 |
+|u_csi_rx/u_efx_csi2_rx/csi2_rx_top_inst/genblk2.lane_aligner_inst/genblk1[0].u1_inst/wr_en_int|                5 |
+|u_csi_rx/u_efx_csi2_rx/csi2_rx_top_inst/genblk2.lane_aligner_inst/genblk1[3].u1_inst/wr_en_int|                5 |
+|u_alg_full/g_canny.u_hyst/n234                                                                |                4 |
+|ceg_net560                                                                                    |                4 |
+|u_i2c/i2c_transfer_en                                                                         |                4 |
+|ceg_net375                                                                                    |                4 |
+|n2289                                                                                         |                3 |
+|ceg_net414                                                                                    |                2 |
+|u_cam_unpack/n682                                                                             |                2 |
+|ceg_net32                                                                                     |                2 |
+|ceg_net422                                                                                    |                2 |
+|ceg_net519                                                                                    |                2 |
+|ceg_net5                                                                                      |                1 |
+|u_csi_rx/u_efx_csi2_rx/csi2_rx_top_inst/n99                                                   |                1 |
+|ceg_net46                                                                                     |                1 |
+|ceg_net44                                                                                     |                1 |
+|ceg_net27                                                                                     |                1 |
+|csi_valid                                                                                     |                1 |
+|ceg_net518                                                                                    |                1 |
+|ceg_net343                                                                                    |                1 |
+|ceg_net49                                                                                     |                1 |
+|ceg_net105                                                                                    |                1 |
+|u_csi_rx/u_efx_csi2_rx/RxValidHS[2]                                                           |                1 |
+|ceg_net330                                                                                    |                1 |
+|ceg_net342                                                                                    |                1 |
+|ceg_net331                                                                                    |                1 |
+|ceg_net164                                                                                    |                1 |
+|u_db_up/n76                                                                                   |                1 |
+|ceg_net539                                                                                    |                1 |
+|ceg_net186                                                                                    |                1 |
+|ceg_net260                                                                                    |                1 |
+|ceg_net223                                                                                    |                1 |
+|u_csi_rx/u_efx_csi2_rx/RxValidHS[0]                                                           |                1 |
+|u_color_store/rd_en                                                                           |                1 |
+|u_measure/n472                                                                                |                1 |
+|u_color_store/n2853                                                                           |                1 |
+|ceg_net401                                                                                    |                1 |
+|ceg_net12                                                                                     |                1 |
+|pix_valid                                                                                     |                1 |
+|u_dbg_leds/n78                                                                                |                1 |
+|u_dbg_leds/n82                                                                                |                1 |
+|u_edge_store/n686                                                                             |                1 |
+|u_i2c/n620                                                                                    |                1 |
+|u_edge_store/n720                                                                             |                1 |
+|n2472                                                                                         |                1 |
+|u_db_dn/n76                                                                                   |                1 |
+|ceg_net111                                                                                    |                1 |
+|u_csi_rx/u_efx_csi2_rx/RxValidHS[3]                                                           |                1 |
+|ceg_net523                                                                                    |                1 |
+|ceg_net526                                                                                    |                1 |
+|ceg_net527                                                                                    |                1 |
+|ceg_net535                                                                                    |                1 |
+|ceg_net439                                                                                    |                1 |
+|ceg_net525                                                                                    |                1 |
+|ceg_net520                                                                                    |                1 |
+|ceg_net541                                                                                    |                1 |
+|ceg_net524                                                                                    |                1 |
+|ceg_net540                                                                                    |                1 |
+|ceg_net537                                                                                    |                1 |
+|ceg_net538                                                                                    |                1 |
+|ceg_net528                                                                                    |                1 |
+|ceg_net534                                                                                    |                1 |
+|ceg_net533                                                                                    |                1 |
+|ceg_net532                                                                                    |                1 |
+|ceg_net522                                                                                    |                1 |
+|ceg_net531                                                                                    |                1 |
+|ceg_net530                                                                                    |                1 |
+|ceg_net521                                                                                    |                1 |
+|ceg_net529                                                                                    |                1 |
+|u_csi_rx/u_efx_csi2_rx/RxValidHS[1]                                                           |                1 |
+|~u_cam_unpack/n439                                                                            |                1 |
+|ceg_net412                                                                                    |                1 |
+|ceg_net354                                                                                    |                1 |
+|ceg_net410                                                                                    |                1 |
+|ceg_net201                                                                                    |                1 |
+|ceg_net319                                                                                    |                1 |
+|ceg_net318                                                                                    |                1 |
+|ceg_net100                                                                                    |                1 |
+|u_color_store/n2111                                                                           |                1 |
+|ceg_net379                                                                                    |                1 |
+|ceg_net355                                                                                    |                1 |
+|u_color_store/n2109                                                                           |                1 |
+|ceg_net238                                                                                    |                1 |
+|ceg_net297                                                                                    |                1 |
+|n2287                                                                                         |                1 |
+|ceg_net108                                                                                    |                1 |
+|ceg_net275                                                                                    |                1 |
+|u_edge_store/n652                                                                             |                1 |
+|u_edge_store/rd_en                                                                            |                1 |
+|ceg_net536                                                                                    |                1 |
++----------------------------------------------------------------------------------------------+------------------+
+
+### ### EFX_FF CE enables (end) ### ### ###
+
+### ### EFX_FF SR set/reset (begin) ### ### ###
+
+Total number of set/reset signals: 10
+Total number of FFs with set/reset signals: 3401
++-----------------------------------------------------------------------------------------------------+------------------+
+|SR Signal                                                                                            |Number of FF loads|
++-----------------------------------------------------------------------------------------------------+------------------+
+|rst_n_pix                                                                                            |             2352 |
+|sys_pll_lock                                                                                         |              826 |
+|raw_de                                                                                               |               69 |
+|u_csi_rx/u_efx_csi2_rx/csi2_rx_top_inst/genblk3.byte2pixel_inst/u1_inst/genblk2.rd_rst[1]            |               50 |
+|u_csi_rx/u_efx_csi2_rx/csi2_rx_top_inst/genblk3.byte2pixel_inst/u1_inst/genblk2.wr_rst[1]            |               36 |
+|u_csi_rx/u_efx_csi2_rx/csi2_rx_top_inst/genblk2.lane_aligner_inst/genblk1[3].u1_inst/genblk2.a_rst[1]|               16 |
+|u_csi_rx/u_efx_csi2_rx/csi2_rx_top_inst/genblk2.lane_aligner_inst/genblk1[0].u1_inst/genblk2.a_rst[1]|               16 |
+|u_csi_rx/u_efx_csi2_rx/csi2_rx_top_inst/genblk2.lane_aligner_inst/genblk1[1].u1_inst/genblk2.a_rst[1]|               16 |
+|u_csi_rx/u_efx_csi2_rx/csi2_rx_top_inst/genblk2.lane_aligner_inst/genblk1[2].u1_inst/genblk2.a_rst[1]|               16 |
+|u_csi_rx/u_efx_csi2_rx/csi2_rx_top_inst/genblk3.byte2pixel_inst/n33                                  |                4 |
++-----------------------------------------------------------------------------------------------------+------------------+
+
+### ### EFX_FF SR set/reset (end) ### ### ###
+
+### ### Sequential Elements/Signals Trimming Report (begin) ### ### ### 
+'dbg_sticky[1]' (system_dbg_top.v:500) (optimized to 0)
+'dbg_lines_vsync[0]' (system_dbg_top.v:548) (unreachable)
+'dbg_lines_vsync[1]' (system_dbg_top.v:548) (unreachable)
+'dbg_lines_vsync[2]' (system_dbg_top.v:548) (unreachable)
+'dbg_lines_vsync[3]' (system_dbg_top.v:548) (unreachable)
+'dbg_lines_vsync[4]' (system_dbg_top.v:548) (unreachable)
+'dbg_lines_vsync[5]' (system_dbg_top.v:548) (unreachable)
+'dbg_lines_vsync[6]' (system_dbg_top.v:548) (unreachable)
+'dbg_lines_vsync[7]' (system_dbg_top.v:548) (unreachable)
+'dbg_lines_vsync[8]' (system_dbg_top.v:548) (unreachable)
+'dbg_lines_vsync[9]' (system_dbg_top.v:548) (unreachable)
+'dbg_lines_vsync[10]' (system_dbg_top.v:548) (unreachable)
+'dbg_lines_vsync[11]' (system_dbg_top.v:548) (unreachable)
+'dbg_lines_vsync[12]' (system_dbg_top.v:548) (unreachable)
+'u_rgb_delay/dff_14/i96_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i96_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i96_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i96_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i96_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i96_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i96_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i96_rst_7' (rgb_video_delay.v:64) (merged to equivalence)
+'u_cam_unpack/hs_1p' (camera_line_unpack.v:55) (merged to equivalence)
+'u_rgb_delay/dff_14/i98_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i98_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i98_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i98_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i98_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i98_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i98_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i98_rst_7' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i21_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i21_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i21_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i21_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i21_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i19_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i20_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i20_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i19_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i19_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i19_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i19_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i19_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i19_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i95_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i95_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i95_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i95_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i95_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i95_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i95_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i95_rst_7' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i18_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i18_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i18_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i18_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i18_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i18_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i18_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'dff_176/i8_rst_0' (system_dbg_top.v:893) (merged to equivalence)
+'dff_176/i8_rst_1' (system_dbg_top.v:893) (merged to equivalence)
+'dff_176/i8_rst_2' (system_dbg_top.v:893) (merged to equivalence)
+'dff_176/i8_rst_3' (system_dbg_top.v:893) (merged to equivalence)
+'dff_176/i8_rst_4' (system_dbg_top.v:893) (merged to equivalence)
+'dff_176/i8_rst_5' (system_dbg_top.v:893) (merged to equivalence)
+'dff_176/i8_rst_6' (system_dbg_top.v:893) (merged to equivalence)
+'dff_176/i8_rst_7' (system_dbg_top.v:893) (merged to equivalence)
+'dff_176/i15_rst_0' (system_dbg_top.v:893) (merged to equivalence)
+'dff_176/i15_rst_1' (system_dbg_top.v:893) (merged to equivalence)
+'dff_176/i15_rst_2' (system_dbg_top.v:893) (merged to equivalence)
+'dff_176/i15_rst_3' (system_dbg_top.v:893) (merged to equivalence)
+'dff_176/i15_rst_4' (system_dbg_top.v:893) (merged to equivalence)
+'dff_176/i15_rst_5' (system_dbg_top.v:893) (merged to equivalence)
+'dff_176/i15_rst_6' (system_dbg_top.v:893) (merged to equivalence)
+'u_alg_full/dff_28/i6_rst_0' (alg_top.v:313) (merged to equivalence)
+'u_alg_full/dff_28/i6_rst_1' (alg_top.v:313) (merged to equivalence)
+'u_alg_full/dff_28/i6_rst_2' (alg_top.v:313) (merged to equivalence)
+'u_alg_full/dff_28/i6_rst_3' (alg_top.v:313) (merged to equivalence)
+'u_alg_full/dff_28/i6_rst_4' (alg_top.v:313) (merged to equivalence)
+'u_alg_full/a22[0]' (alg_top.v:73) (merged to equivalence)
+'u_alg_full/a22[1]' (alg_top.v:73) (merged to equivalence)
+'u_alg_full/a22[2]' (alg_top.v:73) (merged to equivalence)
+'u_alg_full/a22[3]' (alg_top.v:73) (merged to equivalence)
+'u_alg_full/a22[4]' (alg_top.v:73) (merged to equivalence)
+'u_alg_full/a22[5]' (alg_top.v:73) (merged to equivalence)
+'u_alg_full/a22[6]' (alg_top.v:73) (merged to equivalence)
+'u_alg_full/a22[7]' (alg_top.v:73) (merged to equivalence)
+'u_alg_full/u_lb1/r2d1[0]' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\line_buffer_3x3.v:59) (merged to equivalence)
+'u_alg_full/u_lb1/r2d1[1]' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\line_buffer_3x3.v:59) (merged to equivalence)
+'u_alg_full/u_lb1/r2d1[2]' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\line_buffer_3x3.v:59) (merged to equivalence)
+'u_alg_full/u_lb1/r2d1[3]' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\line_buffer_3x3.v:59) (merged to equivalence)
+'u_alg_full/u_lb1/r2d1[4]' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\line_buffer_3x3.v:59) (merged to equivalence)
+'u_alg_full/u_lb1/r2d1[5]' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\line_buffer_3x3.v:59) (merged to equivalence)
+'u_alg_full/u_lb1/r2d1[6]' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\line_buffer_3x3.v:59) (merged to equivalence)
+'u_alg_full/u_lb1/r2d1[7]' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\line_buffer_3x3.v:59) (merged to equivalence)
+'u_alg_full/a21[0]' (alg_top.v:73) (merged to equivalence)
+'u_alg_full/a21[1]' (alg_top.v:73) (merged to equivalence)
+'u_alg_full/a21[2]' (alg_top.v:73) (merged to equivalence)
+'u_alg_full/a21[3]' (alg_top.v:73) (merged to equivalence)
+'u_alg_full/a21[4]' (alg_top.v:73) (merged to equivalence)
+'u_alg_full/a21[5]' (alg_top.v:73) (merged to equivalence)
+'u_alg_full/a21[6]' (alg_top.v:73) (merged to equivalence)
+'u_alg_full/a21[7]' (alg_top.v:73) (merged to equivalence)
+'u_alg_full/g_canny.g_sobel_sob.u_sob_c/i41_rst_0' (sobel.v:70) (merged to equivalence)
+'u_alg_full/g_canny.g_sobel_sob.u_sob_c/i41_rst_1' (sobel.v:70) (merged to equivalence)
+'u_alg_full/g_canny.g_sobel_sob.u_sob_c/i41_rst_2' (sobel.v:70) (merged to equivalence)
+'u_alg_full/g_canny.g_sobel_sob.u_sob_c/i41_rst_3' (sobel.v:70) (merged to equivalence)
+'threshold[0]' (system_dbg_top.v:645) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i110_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i110_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i110_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i110_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i110_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i110_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i110_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i110_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i22_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i22_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i22_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i22_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i22_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i22_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i22_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i109_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i109_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i109_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i109_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i109_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i109_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i109_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i109_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i21_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i21_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i21_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i21_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i21_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i21_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i21_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i21_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i108_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i108_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i108_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i108_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i108_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i108_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i108_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i108_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i20_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i20_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i20_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i20_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i20_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i20_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i20_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i20_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i107_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i107_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i107_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i107_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i107_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i107_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i107_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i107_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i19_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i19_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i19_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i19_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i19_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i19_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i19_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i19_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i106_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i106_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i106_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i106_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i106_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i106_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i106_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i106_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i18_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i18_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i18_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i18_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i18_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i18_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i18_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i18_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i105_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i105_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i105_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i105_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i105_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i105_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i105_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i105_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i17_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i17_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i17_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i17_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i17_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i17_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i17_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i17_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i104_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i104_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i104_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i104_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i104_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i104_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i104_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i104_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i16_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i16_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i16_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i16_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i16_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i16_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i16_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i16_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i103_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i103_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i103_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i103_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i103_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i103_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i103_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i103_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i15_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i15_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i15_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i15_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i15_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i15_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i15_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i15_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i102_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i102_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i102_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i102_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i102_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i102_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i102_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i102_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i14_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i14_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i14_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i14_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i14_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i14_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i14_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i14_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i101_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i101_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i101_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i101_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i101_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i101_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i101_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i101_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i13_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i13_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i13_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i13_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i13_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i13_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i13_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i13_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i100_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i100_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i100_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i100_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i100_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i100_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i100_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i100_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i12_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i12_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i12_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i12_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i12_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i12_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i12_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_12/i12_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i110_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i110_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i110_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i110_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i110_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i110_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i110_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i110_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i22_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i22_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i22_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i22_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i22_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i22_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i22_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i22_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i109_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i109_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i109_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i109_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i109_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i109_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i109_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i109_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i21_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i21_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i21_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i21_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i21_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i21_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i21_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i21_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i108_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i108_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i108_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i108_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i108_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i108_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i108_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i108_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i20_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i20_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i20_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i20_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i20_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i20_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i20_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i20_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i107_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i107_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i107_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i107_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i107_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i107_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i107_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i107_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i19_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i19_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i19_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i19_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i19_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i19_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i19_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i19_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i106_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i106_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i106_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i106_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i106_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i106_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i106_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i106_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i18_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i18_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i18_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i18_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i18_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i18_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i18_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i18_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i105_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i105_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i105_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i105_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i105_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i105_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i105_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i105_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i17_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i17_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i17_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i17_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i17_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i17_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i17_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i17_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i104_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i104_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i104_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i104_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i104_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i104_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i104_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i104_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i16_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i16_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i16_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i16_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i16_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i16_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i16_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i16_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i103_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i103_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i103_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i103_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i103_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i103_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i103_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i103_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i15_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i15_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i15_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i15_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i15_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i15_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i15_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i15_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i102_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i102_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i102_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i102_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i102_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i102_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i102_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i102_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i14_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i14_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i14_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i14_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i14_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i14_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i14_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i14_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i101_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i101_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i101_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i101_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i101_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i101_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i101_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i101_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i13_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i13_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i13_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i13_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i13_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i13_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i13_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i13_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i100_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i100_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i100_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i100_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i100_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i100_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i100_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i100_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i12_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i12_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i12_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i12_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i12_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i12_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i12_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_13/i12_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_9/i11_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_9/i11_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_9/i11_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_9/i11_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_9/i11_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_9/i11_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_9/i11_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_9/i11_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_9/i3_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_9/i3_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_9/i3_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_9/i3_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_9/i3_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_9/i3_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_9/i3_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_9/i3_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_11/i10_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_11/i10_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_11/i10_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_11/i10_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_11/i10_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_11/i10_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_11/i10_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_11/i10_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_11/i2_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_11/i2_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_11/i2_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_11/i2_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_11/i2_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_11/i2_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_11/i2_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_alg_full/u_dly/dff_11/i2_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_rgb_delay/dff_7/i65_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i65_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i65_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i65_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i65_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i65_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i65_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i65_rst_7' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i9_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i9_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i9_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i9_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i9_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i9_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i9_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i66_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i66_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i66_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i66_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i66_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i66_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i66_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i66_rst_7' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i10_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i10_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i10_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i10_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i10_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i10_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i10_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i67_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i67_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i67_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i67_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i67_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i67_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i67_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i67_rst_7' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i11_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i11_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i11_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i11_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i11_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i11_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i11_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i68_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i68_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i68_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i68_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i68_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i68_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i68_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i68_rst_7' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i12_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i12_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i12_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i12_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i12_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i12_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i12_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i69_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i69_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i69_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i69_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i69_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i69_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i69_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i69_rst_7' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i13_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i13_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i13_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i13_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i13_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i13_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i13_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i70_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i70_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i70_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i70_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i70_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i70_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i70_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i70_rst_7' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i14_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i14_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i14_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i14_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i14_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i14_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i14_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i71_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i71_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i71_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i71_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i71_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i71_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i71_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i71_rst_7' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i15_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i15_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i15_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i15_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i15_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i15_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i15_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i72_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i72_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i72_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i72_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i72_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i72_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i72_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i72_rst_7' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i16_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i16_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i16_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i16_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i16_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i16_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_7/i16_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i94_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i94_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i94_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i94_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i94_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i94_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i94_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i94_rst_7' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i17_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i17_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i17_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i17_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i17_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i17_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i17_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i93_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i93_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i93_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i93_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i93_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i93_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i93_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i93_rst_7' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i16_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i16_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i16_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i16_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i16_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i16_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i16_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i99_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i99_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i99_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i99_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i99_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i99_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i99_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i99_rst_7' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i22_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i22_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i22_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i22_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i22_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i22_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_14/i22_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_13/i9_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_13/i9_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_13/i9_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_13/i9_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_13/i9_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_13/i9_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_13/i9_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_13/i9_rst_7' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_13/i2_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_13/i2_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_13/i2_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_13/i2_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_13/i2_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_13/i2_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_13/i2_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_12/i9_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_12/i9_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_12/i9_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_12/i9_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_12/i9_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_12/i9_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_12/i9_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_12/i9_rst_7' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_12/i2_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_12/i2_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_12/i2_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_12/i2_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_12/i2_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_12/i2_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_12/i2_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i72_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i72_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i72_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i72_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i72_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i72_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i72_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i72_rst_7' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i16_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i16_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i16_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i16_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i16_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i16_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i16_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i71_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i71_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i71_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i71_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i71_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i71_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i71_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i71_rst_7' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i15_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i15_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i15_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i15_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i15_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i15_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i15_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i70_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i70_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i70_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i70_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i70_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i70_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i70_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i70_rst_7' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i14_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i14_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i14_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i14_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i14_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i14_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i14_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i69_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i69_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i69_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i69_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i69_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i69_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i69_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i69_rst_7' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i13_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i13_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i13_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i13_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i13_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i13_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i13_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i68_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i68_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i68_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i68_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i68_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i68_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i68_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i68_rst_7' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i12_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i12_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i12_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i12_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i12_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i12_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i12_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i67_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i67_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i67_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i67_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i67_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i67_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i67_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i67_rst_7' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i11_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i11_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i11_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i11_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i11_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i11_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i11_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i66_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i66_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i66_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i66_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i66_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i66_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i66_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i66_rst_7' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i10_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i10_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i10_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i10_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i10_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i10_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i10_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i65_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i65_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i65_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i65_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i65_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i65_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i65_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i65_rst_7' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i9_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i9_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i9_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i9_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i9_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i9_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_8/i9_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_11/i9_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_11/i9_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_11/i9_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_11/i9_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_11/i9_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_11/i9_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_11/i9_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_11/i9_rst_7' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_11/i2_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_11/i2_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_11/i2_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_11/i2_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_11/i2_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_11/i2_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_11/i2_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i72_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i72_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i72_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i72_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i72_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i72_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i72_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i72_rst_7' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i16_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i16_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i16_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i16_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i16_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i16_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i16_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i71_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i71_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i71_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i71_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i71_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i71_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i71_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i71_rst_7' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i15_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i15_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i15_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i15_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i15_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i15_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i15_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i70_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i70_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i70_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i70_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i70_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i70_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i70_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i70_rst_7' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i14_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i14_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i14_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i14_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i14_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i14_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i14_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i69_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i69_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i69_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i69_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i69_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i69_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i69_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i69_rst_7' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i13_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i13_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i13_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i13_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i13_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i13_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i13_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i68_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i68_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i68_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i68_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i68_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i68_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i68_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i68_rst_7' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i12_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i12_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i12_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i12_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i12_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i12_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i12_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i67_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i67_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i67_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i67_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i67_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i67_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i67_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i67_rst_7' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i11_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i11_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i11_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i11_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i11_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i11_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i11_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i66_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i66_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i66_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i66_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i66_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i66_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i66_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i66_rst_7' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i10_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i10_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i10_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i10_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i10_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i10_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i10_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i65_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i65_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i65_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i65_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i65_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i65_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i65_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i65_rst_7' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i9_rst_0' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i9_rst_1' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i9_rst_2' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i9_rst_3' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i9_rst_4' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i9_rst_5' (rgb_video_delay.v:64) (merged to equivalence)
+'u_rgb_delay/dff_9/i9_rst_6' (rgb_video_delay.v:64) (merged to equivalence)
+'u_gray_dly/dff_8/i9_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_8/i9_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_8/i9_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_8/i9_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_8/i9_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_8/i9_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_8/i9_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_8/i9_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_8/i2_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_8/i2_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_8/i2_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_8/i2_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_8/i2_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_8/i2_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_8/i2_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i48_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i48_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i48_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i48_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i48_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i48_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i48_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i48_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i16_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i16_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i16_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i16_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i47_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i47_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i47_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i47_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i47_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i47_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i47_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i47_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i15_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i15_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i15_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i15_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i46_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i46_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i46_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i46_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i46_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i46_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i46_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i46_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i14_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i14_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i14_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i14_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i45_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i45_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i45_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i45_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i45_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i45_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i45_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i45_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i13_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i13_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i13_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i13_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i44_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i44_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i44_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i44_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i44_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i44_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i44_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i44_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i12_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i12_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i12_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i12_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i43_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i43_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i43_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i43_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i43_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i43_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i43_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i43_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i11_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i11_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i11_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i11_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i42_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i42_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i42_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i42_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i42_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i42_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i42_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i42_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i10_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i10_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i10_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i10_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i41_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i41_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i41_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i41_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i41_rst_4' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i41_rst_5' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i41_rst_6' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i41_rst_7' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i9_rst_0' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i9_rst_1' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i9_rst_2' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_gray_dly/dff_7/i9_rst_3' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\video_delay.v:72) (merged to equivalence)
+'u_measure/vsync_d' (measurement_timing.v:34) (merged to equivalence)
+'u_measure/hsync_d' (measurement_timing.v:35) (merged to equivalence)
+'led_ladder[3]' (system_dbg_top.v:501) (merged to equivalence)
+'u_alg_full/u_lb1/r2d2[2]' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\line_buffer_3x3.v:59) (merged to equivalence)
+'u_alg_full/a20[2]' (alg_top.v:73) (merged to equivalence)
+'u_alg_full/u_lb1/r2d2[1]' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\line_buffer_3x3.v:59) (merged to equivalence)
+'u_alg_full/a20[1]' (alg_top.v:73) (merged to equivalence)
+'u_alg_full/u_lb1/r2d2[0]' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\line_buffer_3x3.v:59) (merged to equivalence)
+'u_alg_full/a20[0]' (alg_top.v:73) (merged to equivalence)
+'u_alg_full/u_lb1/r2d2[3]' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\line_buffer_3x3.v:59) (merged to equivalence)
+'u_alg_full/a20[3]' (alg_top.v:73) (merged to equivalence)
+'u_alg_full/u_lb1/r2d2[4]' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\line_buffer_3x3.v:59) (merged to equivalence)
+'u_alg_full/a20[4]' (alg_top.v:73) (merged to equivalence)
+'u_alg_full/u_lb1/r2d2[5]' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\line_buffer_3x3.v:59) (merged to equivalence)
+'u_alg_full/a20[5]' (alg_top.v:73) (merged to equivalence)
+'u_alg_full/u_lb1/r2d2[6]' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\line_buffer_3x3.v:59) (merged to equivalence)
+'u_alg_full/a20[6]' (alg_top.v:73) (merged to equivalence)
+'u_alg_full/u_lb1/r2d2[7]' (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\rtl\video\line_buffer_3x3.v:59) (merged to equivalence)
+'u_alg_full/a20[7]' (alg_top.v:73) (merged to equivalence)
+### ### Sequential Elements Trimming Report (end) ### ### ### 
+
+### ### Module Resource Usage Distribution Estimates (begin) ### ###
+
+**Note: some resources maybe grouped under different hierarchy due to optimization and LUT mapping
+
+Module                                                              FFs      SRLs       ADDs       LUTs    COMB4s      RAMs DSP/MULTs
+------------------------------------------------------------        ---      ----       ----       ----      ----      ---- ---------
+system_dbg_top:system_dbg_top                                  3417(97)    162(2)  1689(140)  5553(138)      0(0)    242(0)      6(3)
+ +u_i2c:i2c_timing_ctrl_16bit(CLK_FREQ=24000000)               140(140)      0(0)     43(43)   505(505)      0(0)      0(0)      0(0)
+ +u_csi_rx:csi_rx                                                974(0)     24(0)     217(0)    1607(0)      0(0)     17(0)      0(0)
+  +u_efx_csi2_rx:efx_csi2_rx_4f1de6a9ad8d49d9beb949c9da85...     974(0)     24(0)     217(0)    1607(0)      0(0)     17(0)      0(0)
+   +dphy_rx_inst:efx_dphy_rx_4f1de6a9ad8d49d9beb949c9da85...     478(0)      0(0)      57(0)     798(0)      0(0)      0(0)      0(0)
+    +rx_clane_fsm_inst0:dphy_rx_clane_fsm_4f1de6a9ad8d49d...     18(18)      0(0)       9(9)     34(34)      0(0)      0(0)      0(0)
+    +genblk3[0].rx_dlane_fsm_inst:dphy_rx_dlane_fsm_4f1de...     34(34)      0(0)     12(12)     94(94)      0(0)      0(0)      0(0)
+    +genblk3[0].rx_dword_align_inst:dphy_rx_dword_align_4...     81(81)      0(0)       0(0)   101(101)      0(0)      0(0)      0(0)
+    +genblk3[1].rx_dlane_fsm_inst:dphy_rx_dlane_fsm_4f1de...     34(34)      0(0)     12(12)     94(94)      0(0)      0(0)      0(0)
+    +genblk3[1].rx_dword_align_inst:dphy_rx_dword_align_4...     81(81)      0(0)       0(0)   101(101)      0(0)      0(0)      0(0)
+    +genblk3[2].rx_dlane_fsm_inst:dphy_rx_dlane_fsm_4f1de...     34(34)      0(0)     12(12)     91(91)      0(0)      0(0)      0(0)
+    +genblk3[2].rx_dword_align_inst:dphy_rx_dword_align_4...     81(81)      0(0)       0(0)     96(96)      0(0)      0(0)      0(0)
+    +genblk3[3].rx_dlane_fsm_inst:dphy_rx_dlane_fsm_4f1de...     34(34)      0(0)     12(12)     91(91)      0(0)      0(0)      0(0)
+    +genblk3[3].rx_dword_align_inst:dphy_rx_dword_align_4...     81(81)      0(0)       0(0)     96(96)      0(0)      0(0)      0(0)
+   +csi2_rx_top_inst:efx_csi2_rx_top_4f1de6a9ad8d49d9beb9...    496(22)     24(0)    160(12)     809(9)      0(0)     17(0)      0(0)
+    +syncreg_1:efx_asyncreg_4f1de6a9ad8d49d9beb949c9da856...       2(2)      0(0)       0(0)       0(0)      0(0)      0(0)      0(0)
+    +syncreg_2:efx_asyncreg_4f1de6a9ad8d49d9beb949c9da8569e1       8(8)      0(0)       0(0)       0(0)      0(0)      0(0)      0(0)
+    +depacketizer_inst:efx_csi2_depacketizer_4f1de6a9ad8d...   163(138)      0(0)       0(0)   344(281)      0(0)      0(0)      0(0)
+     +genblk4.ecc_check_inst:efx_csi2_ecc_check_4f1de6a9a...     25(25)      0(0)       0(0)     63(63)      0(0)      0(0)      0(0)
+    +genblk2.lane_aligner_inst:efx_csi2_lane_aligner_4f1d...      76(4)      0(0)      28(0)      92(0)      0(0)      4(0)      0(0)
+     +genblk1[0].u1_inst:efx_fifo_top_4f1de6a9ad8d49d9beb...      18(2)      0(0)       7(0)      22(0)      0(0)      1(0)      0(0)
+      +xefx_fifo_ram:efx_fifo_ram_4f1de6a9ad8d49d9beb949c...       0(0)      0(0)       0(0)       0(0)      0(0)      1(1)      0(0)
+      +xefx_fifo_ctl:efx_fifo_ctl_4f1de6a9ad8d49d9beb949c...     16(16)      0(0)       7(7)     22(22)      0(0)      0(0)      0(0)
+     +genblk1[1].u1_inst:efx_fifo_top_4f1de6a9ad8d49d9beb...      18(2)      0(0)       7(0)      26(0)      0(0)      1(0)      0(0)
+      +xefx_fifo_ram:efx_fifo_ram_4f1de6a9ad8d49d9beb949c...       0(0)      0(0)       0(0)       0(0)      0(0)      1(1)      0(0)
+      +xefx_fifo_ctl:efx_fifo_ctl_4f1de6a9ad8d49d9beb949c...     16(16)      0(0)       7(7)     26(26)      0(0)      0(0)      0(0)
+     +genblk1[2].u1_inst:efx_fifo_top_4f1de6a9ad8d49d9beb...      18(2)      0(0)       7(0)      22(0)      0(0)      1(0)      0(0)
+      +xefx_fifo_ram:efx_fifo_ram_4f1de6a9ad8d49d9beb949c...       0(0)      0(0)       0(0)       0(0)      0(0)      1(1)      0(0)
+      +xefx_fifo_ctl:efx_fifo_ctl_4f1de6a9ad8d49d9beb949c...     16(16)      0(0)       7(7)     22(22)      0(0)      0(0)      0(0)
+     +genblk1[3].u1_inst:efx_fifo_top_4f1de6a9ad8d49d9beb...      18(2)      0(0)       7(0)      22(0)      0(0)      1(0)      0(0)
+      +xefx_fifo_ram:efx_fifo_ram_4f1de6a9ad8d49d9beb949c...       0(0)      0(0)       0(0)       0(0)      0(0)      1(1)      0(0)
+      +xefx_fifo_ctl:efx_fifo_ctl_4f1de6a9ad8d49d9beb949c...     16(16)      0(0)       7(7)     22(22)      0(0)      0(0)      0(0)
+    +genblk3.byte2pixel_inst:efx_csi2_byte2pixel_4f1de6a9...    225(20)     24(0)    120(71)   364(161)      0(0)     13(0)      0(0)
+     +syncreg_0:efx_asyncreg_4f1de6a9ad8d49d9beb949c9da85...       2(2)      0(0)       0(0)       0(0)      0(0)      0(0)      0(0)
+     +syncreg_1:efx_asyncreg_4f1de6a9ad8d49d9beb949c9da85...       2(2)      0(0)       0(0)       0(0)      0(0)      0(0)      0(0)
+     +syncreg_2:efx_asyncreg_4f1de6a9ad8d49d9beb949c9da85...       2(2)      0(0)       0(0)       0(0)      0(0)      0(0)      0(0)
+     +syncreg_3:efx_asyncreg_4f1de6a9ad8d49d9beb949c9da85...       2(2)      0(0)       0(0)       0(0)      0(0)      0(0)      0(0)
+     +syncreg_4:efx_asyncreg_4f1de6a9ad8d49d9beb949c9da85...       2(2)      0(0)       0(0)       0(0)      0(0)      0(0)      0(0)
+     +syncreg_5:efx_asyncreg_4f1de6a9ad8d49d9beb949c9da85...       2(2)      0(0)       0(0)       0(0)      0(0)      0(0)      0(0)
+     +syncreg_6:efx_asyncreg_4f1de6a9ad8d49d9beb949c9da85...       2(2)      0(0)       0(0)       0(0)      0(0)      0(0)      0(0)
+     +syncreg_7:efx_asyncreg_4f1de6a9ad8d49d9beb949c9da85...       2(2)      0(0)       0(0)       0(0)      0(0)      0(0)      0(0)
+     +syncreg_8:efx_asyncreg_4f1de6a9ad8d49d9beb949c9da85...       2(2)      0(0)       0(0)       0(0)      0(0)      0(0)      0(0)
+     +syncreg_9:efx_asyncreg_4f1de6a9ad8d49d9beb949c9da85...       2(2)      0(0)       0(0)       0(0)      0(0)      0(0)      0(0)
+     +syncreg_10:efx_asyncreg_4f1de6a9ad8d49d9beb949c9da8...       2(2)      0(0)       0(0)       0(0)      0(0)      0(0)      0(0)
+     +syncreg_11:efx_asyncreg_4f1de6a9ad8d49d9beb949c9da8...       2(2)      0(0)       0(0)       0(0)      0(0)      0(0)      0(0)
+     +syncreg_12:efx_asyncreg_4f1de6a9ad8d49d9beb949c9da8...       2(2)      0(0)       0(0)       0(0)      0(0)      0(0)      0(0)
+     +syncreg_13:efx_asyncreg_4f1de6a9ad8d49d9beb949c9da8...       2(2)      0(0)       0(0)       0(0)      0(0)      0(0)      0(0)
+     +syncreg_14:efx_asyncreg_4f1de6a9ad8d49d9beb949c9da8...       2(2)      0(0)       0(0)       0(0)      0(0)      0(0)      0(0)
+     +syncreg_15:efx_asyncreg_4f1de6a9ad8d49d9beb949c9da8...       2(2)      0(0)       0(0)       0(0)      0(0)      0(0)      0(0)
+     +syncreg_16:efx_asyncreg_4f1de6a9ad8d49d9beb949c9da8...       2(2)      0(0)       0(0)       0(0)      0(0)      0(0)      0(0)
+     +syncreg_17:efx_asyncreg_4f1de6a9ad8d49d9beb949c9da8...       2(2)      0(0)       0(0)       0(0)      0(0)      0(0)      0(0)
+     +syncreg_18:efx_asyncreg_4f1de6a9ad8d49d9beb949c9da8...       2(2)      0(0)       0(0)       0(0)      0(0)      0(0)      0(0)
+     +syncreg_20:efx_asyncreg_4f1de6a9ad8d49d9beb949c9da8...       4(4)      0(0)       0(0)       0(0)      0(0)      0(0)      0(0)
+     +syncreg_23:efx_asyncreg_4f1de6a9ad8d49d9beb949c9da8...       2(2)      0(0)       0(0)       0(0)      0(0)      0(0)      0(0)
+     +syncreg_24:efx_asyncreg_4f1de6a9ad8d49d9beb949c9da8...       2(2)      0(0)       0(0)       0(0)      0(0)      0(0)      0(0)
+     +syncreg_25:efx_asyncreg_4f1de6a9ad8d49d9beb949c9da8...       2(2)      0(0)       0(0)       0(0)      0(0)      0(0)      0(0)
+     +syncreg_26:efx_asyncreg_4f1de6a9ad8d49d9beb949c9da8...       2(2)      0(0)       0(0)       0(0)      0(0)      0(0)      0(0)
+     +genblk5.depack64bit_inst:efx_csi2_depack64bit_4f1de...     65(65)      0(0)       0(0)   127(127)      0(0)      0(0)      0(0)
+     +u1_inst:efx_fifo_top_4f1de6a9ad8d49d9beb949c9da8569...      90(4)     24(0)      49(0)      76(0)      0(0)     13(0)      0(0)
+      +xefx_fifo_ram:efx_fifo_ram_4f1de6a9ad8d49d9beb949c...       0(0)      0(0)       0(0)       0(0)      0(0)    13(13)      0(0)
+      +xefx_fifo_ctl:efx_fifo_ctl_4f1de6a9ad8d49d9beb949c...     86(86)     24(0)     49(49)     76(32)      0(0)      0(0)      0(0)
+       +genblk7.xrd2wr_bin2gray:efx_fifo_bin2gray_4f1de6a...       0(0)      0(0)       0(0)     11(11)      0(0)      0(0)      0(0)
+       +genblk7.xrd2wr_addr_sync:efx_fifo_datasync_4f1de6...       0(0)    12(12)       0(0)       0(0)      0(0)      0(0)      0(0)
+       +genblk7.xrd2wr_gray2bin:efx_fifo_gray2bin_4f1de6a...       0(0)      0(0)       0(0)      11(1)      0(0)      0(0)      0(0)
+        +genblk1.genblk1.u_gray2bin:efx_fifo_gray2bin_4f1...       0(0)      0(0)       0(0)      10(1)      0(0)      0(0)      0(0)
+         +genblk1.genblk1.u_gray2bin:efx_fifo_gray2bin_4f...       0(0)      0(0)       0(0)       9(1)      0(0)      0(0)      0(0)
+          +genblk1.genblk1.u_gray2bin:efx_fifo_gray2bin_4...       0(0)      0(0)       0(0)       8(1)      0(0)      0(0)      0(0)
+           +genblk1.genblk1.u_gray2bin:efx_fifo_gray2bin_...       0(0)      0(0)       0(0)       7(1)      0(0)      0(0)      0(0)
+            +genblk1.genblk1.u_gray2bin:efx_fifo_gray2bin...       0(0)      0(0)       0(0)       6(1)      0(0)      0(0)      0(0)
+             +genblk1.genblk1.u_gray2bin:efx_fifo_gray2bi...       0(0)      0(0)       0(0)       5(1)      0(0)      0(0)      0(0)
+              +genblk1.genblk1.u_gray2bin:efx_fifo_gray2b...       0(0)      0(0)       0(0)       4(1)      0(0)      0(0)      0(0)
+               +genblk1.genblk1.u_gray2bin:efx_fifo_gray2...       0(0)      0(0)       0(0)       3(1)      0(0)      0(0)      0(0)
+                +genblk1.genblk1.u_gray2bin:efx_fifo_gray...       0(0)      0(0)       0(0)       2(1)      0(0)      0(0)      0(0)
+                 +genblk1.genblk1.u_gray2bin:efx_fifo_gra...       0(0)      0(0)       0(0)       1(1)      0(0)      0(0)      0(0)
+       +genblk7.wr2rd_bin2gray:efx_fifo_bin2gray_4f1de6a9...       0(0)      0(0)       0(0)     11(11)      0(0)      0(0)      0(0)
+       +genblk7.wr2rd_addr_sync:efx_fifo_datasync_4f1de6a...       0(0)    12(12)       0(0)       0(0)      0(0)      0(0)      0(0)
+       +genblk7.wr2rd_gray2bin:efx_fifo_gray2bin_4f1de6a9...       0(0)      0(0)       0(0)      11(1)      0(0)      0(0)      0(0)
+        +genblk1.genblk1.u_gray2bin:efx_fifo_gray2bin_4f1...       0(0)      0(0)       0(0)      10(1)      0(0)      0(0)      0(0)
+         +genblk1.genblk1.u_gray2bin:efx_fifo_gray2bin_4f...       0(0)      0(0)       0(0)       9(1)      0(0)      0(0)      0(0)
+          +genblk1.genblk1.u_gray2bin:efx_fifo_gray2bin_4...       0(0)      0(0)       0(0)       8(1)      0(0)      0(0)      0(0)
+           +genblk1.genblk1.u_gray2bin:efx_fifo_gray2bin_...       0(0)      0(0)       0(0)       7(1)      0(0)      0(0)      0(0)
+            +genblk1.genblk1.u_gray2bin:efx_fifo_gray2bin...       0(0)      0(0)       0(0)       6(1)      0(0)      0(0)      0(0)
+             +genblk1.genblk1.u_gray2bin:efx_fifo_gray2bi...       0(0)      0(0)       0(0)       5(1)      0(0)      0(0)      0(0)
+              +genblk1.genblk1.u_gray2bin:efx_fifo_gray2b...       0(0)      0(0)       0(0)       4(1)      0(0)      0(0)      0(0)
+               +genblk1.genblk1.u_gray2bin:efx_fifo_gray2...       0(0)      0(0)       0(0)       3(1)      0(0)      0(0)      0(0)
+                +genblk1.genblk1.u_gray2bin:efx_fifo_gray...       0(0)      0(0)       0(0)       2(1)      0(0)      0(0)      0(0)
+                 +genblk1.genblk1.u_gray2bin:efx_fifo_gra...       0(0)      0(0)       0(0)       1(1)      0(0)      0(0)      0(0)
+ +u_cam_unpack:camera_line_unpack                                58(58)      0(0)     34(34)   107(107)      0(0)      4(4)      0(0)
+ +u_cam_lb:line_buffer_3x3                                     120(120)      0(0)       0(0)     74(74)      0(0)      2(2)      0(0)
+ +u_cam_db:debayer                                               22(22)      0(0)     67(67)     38(38)      0(0)      0(0)      0(0)
+ +u_color_store:rgb565_preview_store                           209(187)      0(0)     97(77)   443(414)      0(0)  160(160)      0(0)
+  +u_timing:vga_timing(H_BITS=11,V_BITS=11,GENLOCK=0)            22(22)      0(0)     20(20)     29(29)      0(0)      0(0)      0(0)
+ +u_dbg_leds:dbg_led_bank                                        25(25)      0(0)     19(19)     30(30)      0(0)      0(0)      0(0)
+ +u_db_up:key_debounce(CNT_MAX=500000)                           23(23)      0(0)     18(18)     31(31)      0(0)      0(0)      0(0)
+ +u_db_dn:key_debounce(CNT_MAX=500000)                           24(24)      0(0)     18(18)     32(32)      0(0)      0(0)      0(0)
+ +u_thr:threshold_reg(INIT=8'b0100000)                             7(7)      0(0)       6(6)       7(7)      0(0)      0(0)      0(0)
+ +u_measure:measurement_timing                                   49(49)      0(0)     41(41)     50(50)      0(0)      0(0)      0(0)
+ +u_rgb_delay:rgb_video_delay(STAGES=16)                         34(34)    68(68)       0(0)     34(34)      0(0)      0(0)      0(0)
+ +u_gray_lb:line_buffer_3x3                                    161(161)      0(0)     15(15)   128(128)      0(0)      2(2)      0(0)
+ +u_gray_med:median3x3                                           96(96)      0(0)       0(0)    428(65)      0(0)      0(0)      0(0)
+  +u_s0:sort3                                                      0(0)      0(0)       0(0)     81(81)      0(0)      0(0)      0(0)
+  +u_s1:sort3                                                      0(0)      0(0)       0(0)     80(80)      0(0)      0(0)      0(0)
+  +u_s2:sort3                                                      0(0)      0(0)       0(0)     77(77)      0(0)      0(0)      0(0)
+  +u_sm:sort3                                                      0(0)      0(0)       0(0)     61(61)      0(0)      0(0)      0(0)
+  +u_sf:sort3                                                      0(0)      0(0)       0(0)     64(64)      0(0)      0(0)      0(0)
+ +u_gray_dly:video_delay(STAGES=12)                              16(16)    18(18)       0(0)       9(9)      0(0)      0(0)      0(0)
+ +u_alg_full:alg_top(LATENCY=17,EDGE_FILTER=2'b10,NMS_EN=...   1264(29)     50(1)     878(0)   1484(60)      0(0)     17(0)      3(0)
+  +u_lb1:line_buffer_3x3                                       125(125)      0(0)     15(15)     92(92)      0(0)      2(2)      0(0)
+  +u_db:debayer                                                    1(1)      0(0)     67(67)     41(41)      0(0)      0(0)      0(0)
+  +u_gray:grayscale                                                9(9)      0(0)     31(31)       0(0)      0(0)      0(0)      3(3)
+  +u_lb2:line_buffer_3x3(WIDTH=638)                            155(155)      0(0)     29(29)     51(51)      0(0)      2(2)      0(0)
+  +u_med:median3x3                                             129(129)      0(0)   158(158)   523(217)      0(0)      0(0)      0(0)
+   +u_s0:sort3                                                     0(0)      0(0)       0(0)     81(81)      0(0)      0(0)      0(0)
+   +u_s1:sort3                                                     0(0)      0(0)       0(0)     82(82)      0(0)      0(0)      0(0)
+   +u_s2:sort3                                                     0(0)      0(0)       0(0)     79(79)      0(0)      0(0)      0(0)
+   +u_sm:sort3                                                     0(0)      0(0)       0(0)     64(64)      0(0)      0(0)      0(0)
+  +g_canny.u_gauss:gaussian5x5(WIDTH=636)                      209(209)      0(0)   411(411)   254(254)      0(0)      4(4)      0(0)
+  +g_canny.u_lb3c:line_buffer_3x3(WIDTH=632)                   144(144)      0(0)     15(15)     49(49)      0(0)      2(2)      0(0)
+  +g_canny.g_sobel_sob.u_sob_c:sobel                           131(131)      1(1)   112(112)     29(29)      0(0)      0(0)      0(0)
+  +g_canny.u_lbgc:line_buffer_3x3(WIDTH=630,DW=12)             213(213)      0(0)     15(15)     50(50)      0(0)      4(4)      0(0)
+  +g_canny.u_hyst:canny_hysteresis(WIDTH=628)                    20(20)      0(0)     10(10)   262(262)      0(0)      1(1)      0(0)
+  +g_canny.g_link.u_link_c:edge_link3x3(WIDTH=626)               70(22)      0(0)      15(0)      49(0)      0(0)      2(0)      0(0)
+   +u_lb:line_buffer_3x3(WIDTH=626,DW=1)                         48(48)      0(0)     15(15)     49(49)      0(0)      2(2)      0(0)
+  +u_dly:video_delay(STAGES=17)                                  29(29)    48(48)       0(0)     24(24)      0(0)      0(0)      0(0)
+ +u_edge_store:edge_frame_store(ALIGN_X_SUB=3,ALIGN_Y_SUB=4)     19(19)      0(0)     44(44)   108(108)      0(0)    40(40)      0(0)
+ +u_rgb2dvi:rgb2dvi(ENABLE_OSERDES=0)                             79(0)      0(0)      52(0)     300(0)      0(0)      0(0)      0(0)
+  +enc_0:tmds_channel                                            10(10)      0(0)     14(14)     83(83)      0(0)      0(0)      0(0)
+  +enc_1:tmds_channel                                            10(10)      0(0)     19(19)     99(99)      0(0)      0(0)      0(0)
+  +enc_2:tmds_channel                                            59(59)      0(0)     19(19)   118(118)      0(0)      0(0)      0(0)
+
+### ### Module Resource Usage Distribution Estimates (end) ### ###
+
+
+### ### DSP Usage Report (begin) ### ### ### 
+
++------------------------+-----+------+-------+------+-------+-----+----+
+|DSP                     |TYPE |SIGNED|SHIFTER|BFLOAT|CAS_OUT|  O  |REGS|
++------------------------+-----+------+-------+------+-------+-----+----+
+|mult_166                |DSP24|      |       |      |       |(A*B)|    |
+|mult_168                |DSP24|      |       |      |       |(A*B)|    |
+|u_alg_full/u_gray/mult_3|DSP24|      |       |      |       |(A*B)| B  |
+|mult_165                |DSP24|      |       |      |       |(A*B)|    |
+|u_alg_full/u_gray/mult_4|DSP24|      |       |      |       |(A*B)| B  |
+|u_alg_full/u_gray/mult_6|DSP24|      |       |      |       |(A*B)| B  |
++------------------------+-----+------+-------+------+-------+-----+----+
+
+### ### Clock Load Distribution Report (begin) ### ###
+
++---------+----------+----------+------------+----------------+
+|Clock    |Flip-Flops|Shift-Regs|Memory Ports|Multipliers/DSPs|
++---------+----------+----------+------------+----------------+
+|clk_sys  |      140 |        0 |          0 |              0 |
+|clk_csi  |      168 |        0 |          0 |              0 |
+|clk_pixel|     2490 |      150 |        463 |              3 |
+|csi_rxc_i|      619 |       12 |         21 |              0 |
++---------+----------+----------+------------+----------------+
+
+### ### Clock Load Distribution Report (end) ### ###
+
+### ### Resource Summary (begin) ### ### ### 
+
+INPUT  PORTS    : 	53
+OUTPUT PORTS    : 	75
+
+EFX_ADD                 : 	1689
+EFX_LUT4                : 	5553
+   1-2  Inputs          : 	1644
+   3    Inputs          : 	1742
+   4    Inputs          : 	2167
+EFX_DSP24               : 	6
+EFX_FF                  : 	3417
+EFX_SRL8                : 	162
+EFX_RAM10               : 	242
+### ### Resource Summary (end) ### ### ###
+
+Plain synthesis (without verilog dump and post-map checks) time : 32s
+Elapsed synthesis time : 33s

@@ -1,0 +1,3995 @@
+﻿# Whole-file unified diff: rgb565_neutral_edge_median vs rgb565_neutral_overlayfix
+--- a/alg_top.v
++++ b/alg_top.v
+@@ -1,433 +1,485 @@
+-//==============================================================================
+-// alg_top : A-group image pipeline behind the frozen pixel-stream interface.
+-//
+-//   RAW8 Bayer (BGGR)
+-//     -> line_buffer_3x3 -> debayer      (RAW8 -> RGB888)
+-//     -> grayscale                        (RGB888 -> Y8)
+-//     -> line_buffer_3x3 -> median3x3     (3x3 median denoise)
+-//     -> [CANNY] gaussian5x5              (5x5 Gaussian pre-smoothing)
+-//     -> line_buffer_3x3 -> sobel         (grad = |Gx|+|Gy|, gx, gy)
+-//     -> [CANNY] line_buffer_3x3(grad) -> canny_nms -> canny_hysteresis
+-//        [SOBEL] nms3x3 -> edge_link3x3
+-//     -> out_data = binary edge (0xFF / 0x00)
+-//     -> out_gray = median-filtered Y8, delayed to the same cycle
+-//
+-// EDGE_FILTER selects the Sobel input (CANNY_EN=0 path):
+-//   0 = raw grayscale
+-//   1 = plain 3x3 median
+-//   2 = adaptive median (only isolated outliers are replaced)
+-//
+-// CANNY_EN selects the full Canny chain (Gaussian -> Sobel -> NMS ->
+-// double-threshold hysteresis) instead of the plain Sobel threshold path.
+-// With CANNY_EN=1 the edge path always uses the Gaussian-smoothed grayscale,
+-// so EDGE_FILTER is ignored; the median stage still runs to feed out_gray.
+-//
+-// Port list matches rtl/alg/alg_stub.v exactly, so it is a drop-in replacement.
+-// de/hs/vs/x/y are delayed by LATENCY cycles so they stay aligned with data.
+-//==============================================================================
+-module alg_top #(
+-    parameter WIDTH   = 640,
+-    parameter X_BITS  = 11,
+-    parameter Y_BITS  = 11,
+-    parameter LATENCY = 12,   // 1(lb1)+1(debayer)+1(gray)+1(lb2)+3(median)+1(lb3)+4(sobel)
+-    parameter EDGE_FILTER = 1,
+-    parameter NMS_EN = 0,
+-    parameter LINK_EN = 0,
+-    parameter CANNY_EN = 0   // 1 = Gaussian + NMS + hysteresis (Canny) edge path
+-)(
+-    input  wire                clk,
+-    input  wire                rst_n,
+-
+-    input  wire [7:0]          in_data,
+-    input  wire                in_valid,
+-    input  wire                in_de,
+-    input  wire                in_hs,
+-    input  wire                in_vs,
+-    input  wire [X_BITS-1:0]   in_x,
+-    input  wire [Y_BITS-1:0]   in_y,
+-
+-    input  wire [7:0]          threshold,
+-
+-    output wire [7:0]          out_data,
+-    output wire [7:0]          out_gray,
+-    output wire                out_valid,
+-    output wire                out_de,
+-    output wire                out_hs,
+-    output wire                out_vs,
+-    output wire [X_BITS-1:0]   out_x,
+-    output wire [Y_BITS-1:0]   out_y
+-);
+-
+-    localparam W = WIDTH;
+-
+-    // interface vsync is active-low; the line buffer reset is active-high
+-    wire vs_act = ~in_vs;
+-
+-    //--------------------------------------------------------------------------
+-    // stage 1 : 3x3 window + debayer  (RAW8 -> RGB888)
+-    //--------------------------------------------------------------------------
+-    wire [7:0] a00,a01,a02,a10,a11,a12,a20,a21,a22;
+-    wire       a_valid;
+-    wire [15:0] a_x, a_y;
+-
+-    line_buffer_3x3 #(.WIDTH(W), .DW(8)) u_lb1 (
+-        .clk(clk), .rst_n(rst_n),
+-        .din(in_data), .din_valid(in_valid), .din_vsync(vs_act),
+-        .w00(a00), .w01(a01), .w02(a02),
+-        .w10(a10), .w11(a11), .w12(a12),
+-        .w20(a20), .w21(a21), .w22(a22),
+-        .dout_valid(a_valid), .dout_x(a_x), .dout_y(a_y)
+-    );
+-
+-    wire [7:0] rgb_r, rgb_g, rgb_b;
+-    wire       rgb_valid;
+-    debayer u_db (
+-        .clk(clk), .rst_n(rst_n),
+-        .w00(a00), .w01(a01), .w02(a02),
+-        .w10(a10), .w11(a11), .w12(a12),
+-        .w20(a20), .w21(a21), .w22(a22),
+-        .in_valid(a_valid), .in_x(a_x), .in_y(a_y),
+-        .r(rgb_r), .g(rgb_g), .b(rgb_b), .out_valid(rgb_valid)
+-    );
+-
+-    //--------------------------------------------------------------------------
+-    // stage 2 : grayscale
+-    //--------------------------------------------------------------------------
+-    wire [7:0] gray_y;
+-    wire       gray_valid, gray_href, gray_vsync;
+-    grayscale u_gray (
+-        .clk(clk), .rst_n(rst_n),
+-        .r(rgb_r), .g(rgb_g), .b(rgb_b),
+-        .in_valid(rgb_valid), .in_href(1'b1), .in_vsync(1'b0),
+-        .y(gray_y), .out_valid(gray_valid),
+-        .out_href(gray_href), .out_vsync(gray_vsync)
+-    );
+-
+-    //--------------------------------------------------------------------------
+-    // stage 3 : 3x3 window + median filter   (always on: feeds out_gray)
+-    //--------------------------------------------------------------------------
+-    wire [7:0] b00,b01,b02,b10,b11,b12,b20,b21,b22;
+-    wire       b_valid;
+-    wire [15:0] b_x, b_y;
+-
+-    line_buffer_3x3 #(.WIDTH(W-2), .DW(8)) u_lb2 (
+-        .clk(clk), .rst_n(rst_n),
+-        .din(gray_y), .din_valid(gray_valid), .din_vsync(1'b0),
+-        .w00(b00), .w01(b01), .w02(b02),
+-        .w10(b10), .w11(b11), .w12(b12),
+-        .w20(b20), .w21(b21), .w22(b22),
+-        .dout_valid(b_valid), .dout_x(b_x), .dout_y(b_y)
+-    );
+-
+-    wire [7:0] med_y, med_adaptive;
+-    wire       med_valid;
+-    median3x3 u_med (
+-        .clk(clk), .rst_n(rst_n),
+-        .w00(b00), .w01(b01), .w02(b02),
+-        .w10(b10), .w11(b11), .w12(b12),
+-        .w20(b20), .w21(b21), .w22(b22),
+-        .in_valid(b_valid), .med(med_y), .med_adaptive(med_adaptive),
+-        .out_valid(med_valid)
+-    );
+-
+-    // Delay the median-filtered grayscale by the remaining lb3 + Sobel
+-    // latency (1 + 4 = 5 cycles), so out_gray is aligned with out_data.
+-    reg [7:0] gray_d1, gray_d2, gray_d3, gray_d4, gray_d5, gray_d6, gray_d7;
+-    always @(posedge clk or negedge rst_n) begin
+-        if (!rst_n) begin
+-            gray_d1 <= 8'd0; gray_d2 <= 8'd0; gray_d3 <= 8'd0;
+-            gray_d4 <= 8'd0; gray_d5 <= 8'd0; gray_d6 <= 8'd0; gray_d7 <= 8'd0;
+-        end else begin
+-            gray_d1 <= med_y;
+-            gray_d2 <= gray_d1;
+-            gray_d3 <= gray_d2;
+-            gray_d4 <= gray_d3;
+-            gray_d5 <= gray_d4;
+-            gray_d6 <= gray_d5;
+-            gray_d7 <= gray_d6;
+-        end
+-    end
+-    assign out_gray = (LATENCY >= 14) ? gray_d7 :
+-                      (LATENCY >= 13) ? gray_d6 : gray_d5;
+-
+-    // Align the unfiltered grayscale with med_y at the input of lb3:
+-    // gray_y is 4 cycles earlier (lb2 + 3-stage median).
+-    reg [7:0] gray_raw_d1, gray_raw_d2, gray_raw_d3, gray_raw_d4;
+-    always @(posedge clk or negedge rst_n) begin
+-        if (!rst_n) begin
+-            gray_raw_d1 <= 8'd0; gray_raw_d2 <= 8'd0;
+-            gray_raw_d3 <= 8'd0; gray_raw_d4 <= 8'd0;
+-        end else begin
+-            gray_raw_d1 <= gray_y;
+-            gray_raw_d2 <= gray_raw_d1;
+-            gray_raw_d3 <= gray_raw_d2;
+-            gray_raw_d4 <= gray_raw_d3;
+-        end
+-    end
+-    wire [7:0] edge_src = (EDGE_FILTER == 2) ? med_adaptive :
+-                          (EDGE_FILTER == 1) ? med_y : gray_raw_d4;
+-
+-    //==========================================================================
+-    // SOBEL EDGE PATH  (CANNY_EN = 0)
+-    //==========================================================================
+-    wire [7:0]  sob_path_data;
+-    wire        sob_path_valid;
+-    generate
+-        if (!CANNY_EN) begin : g_sobel
+-            //--------------------------------------------------------------------------
+-            // stage 4 : 3x3 window + sobel
+-            //--------------------------------------------------------------------------
+-            wire [7:0] c00,c01,c02,c10,c11,c12,c20,c21,c22;
+-            wire       c_valid;
+-            wire [15:0] c_x, c_y;
+-
+-            line_buffer_3x3 #(.WIDTH(W-4), .DW(8)) u_lb3 (
+-                .clk(clk), .rst_n(rst_n),
+-                .din(edge_src), .din_valid(med_valid), .din_vsync(1'b0),
+-                .w00(c00), .w01(c01), .w02(c02),
+-                .w10(c10), .w11(c11), .w12(c12),
+-                .w20(c20), .w21(c21), .w22(c22),
+-                .dout_valid(c_valid), .dout_x(c_x), .dout_y(c_y)
+-            );
+-
+-            wire [11:0] grad;
+-            wire        sob_valid, sob_edge;
+-            wire signed [10:0] sob_gx, sob_gy;
+-            sobel u_sob (
+-                .clk(clk), .rst_n(rst_n),
+-                .w00(c00), .w01(c01), .w02(c02),
+-                .w10(c10), .w11(c11), .w12(c12),
+-                .w20(c20), .w21(c21), .w22(c22),
+-                .in_valid(c_valid), .threshold({4'b0000, threshold}),
+-                .grad(grad), .gx(sob_gx), .gy(sob_gy),
+-                .edge_out(sob_edge), .out_valid(sob_valid)
+-            );
+-
+-            // Optional NMS + local hysteresis.  The gradient-magnitude line buffer
+-            // adds one cycle, so the top level instantiates this path with LATENCY=13.
+-            wire [11:0] nms_g00, nms_g01, nms_g02, nms_g10, nms_g11, nms_g12,
+-                        nms_g20, nms_g21, nms_g22;
+-            wire        nms_g_valid, nms_edge, nms_valid;
+-            reg signed [10:0] nms_gx_d1, nms_gy_d1;
+-            wire        link_edge, link_valid;
+-
+-            if (NMS_EN) begin : g_nms
+-                line_buffer_3x3 #(.WIDTH(W-4), .DW(12)) u_lbg (
+-                    .clk(clk), .rst_n(rst_n),
+-                    .din(grad), .din_valid(sob_valid), .din_vsync(1'b0),
+-                    .w00(nms_g00), .w01(nms_g01), .w02(nms_g02),
+-                    .w10(nms_g10), .w11(nms_g11), .w12(nms_g12),
+-                    .w20(nms_g20), .w21(nms_g21), .w22(nms_g22),
+-                    .dout_valid(nms_g_valid), .dout_x(), .dout_y()
+-                );
+-
+-                always @(posedge clk or negedge rst_n) begin
+-                    if (!rst_n) begin
+-                        nms_gx_d1 <= 11'sd0;
+-                        nms_gy_d1 <= 11'sd0;
+-                    end else begin
+-                        nms_gx_d1 <= sob_gx;
+-                        nms_gy_d1 <= sob_gy;
+-                    end
+-                end
+-
+-                nms3x3 u_nms (
+-                    .clk(clk), .rst_n(rst_n),
+-                    .g00(nms_g00), .g01(nms_g01), .g02(nms_g02),
+-                    .g10(nms_g10), .g11(nms_g11), .g12(nms_g12),
+-                    .g20(nms_g20), .g21(nms_g21), .g22(nms_g22),
+-                    .gx(nms_gx_d1), .gy(nms_gy_d1),
+-                    .in_valid(nms_g_valid),
+-                    .high_thr(threshold), .low_thr(threshold >> 1),
+-                    .edge_out(nms_edge), .out_valid(nms_valid)
+-                );
+-
+-                if (LINK_EN) begin : g_link
+-                    edge_link3x3 #(.WIDTH(W-4)) u_link (
+-                        .clk(clk), .rst_n(rst_n),
+-                        .in_edge(nms_edge), .in_valid(nms_valid),
+-                        .gx(nms_gx_d1), .gy(nms_gy_d1),
+-                        .out_edge(link_edge), .out_valid(link_valid)
+-                    );
+-                end else begin : g_no_link
+-                    assign link_edge  = 1'b0;
+-                    assign link_valid = 1'b0;
+-                end
+-            end else begin : g_no_nms
+-                assign nms_g00 = 12'd0; assign nms_g01 = 12'd0; assign nms_g02 = 12'd0;
+-                assign nms_g10 = 12'd0; assign nms_g11 = 12'd0; assign nms_g12 = 12'd0;
+-                assign nms_g20 = 12'd0; assign nms_g21 = 12'd0; assign nms_g22 = 12'd0;
+-                assign nms_g_valid = 1'b0;
+-                assign nms_edge  = 1'b0;
+-                assign nms_valid = 1'b0;
+-                assign link_edge  = 1'b0;
+-                assign link_valid = 1'b0;
+-                always @(posedge clk or negedge rst_n) begin
+-                    if (!rst_n) begin
+-                        nms_gx_d1 <= 11'sd0;
+-                        nms_gy_d1 <= 11'sd0;
+-                    end else begin
+-                        nms_gx_d1 <= sob_gx;
+-                        nms_gy_d1 <= sob_gy;
+-                    end
+-                end
+-            end
+-
+-            assign sob_path_data = LINK_EN
+-                                 ? ((link_valid && link_edge) ? 8'hFF : 8'h00)
+-                                 : (NMS_EN
+-                                    ? ((nms_valid && nms_edge) ? 8'hFF : 8'h00)
+-                                    : ((sob_valid && sob_edge) ? 8'hFF : 8'h00));
+-            assign sob_path_valid = LINK_EN ? link_valid : (NMS_EN ? nms_valid : sob_valid);
+-        end else begin : g_no_sobel
+-            assign sob_path_data  = 8'h00;
+-            assign sob_path_valid = 1'b0;
+-        end
+-    endgenerate
+-
+-    //==========================================================================
+-    // CANNY EDGE PATH  (CANNY_EN = 1)
+-    //   grayscale -> gaussian5x5 -> 3x3 sobel -> NMS -> hysteresis -> link
+-    //   Total latency: 1(lb1)+1(debayer)+1(gray)+2(gauss)+1(lb3)+4(sobel)
+-    //                  +1(lbg)+0(nms)+1(hyst)+1(link) = 13 cycles.
+-    //==========================================================================
+-    wire [7:0]  canny_path_data;
+-    wire        canny_path_valid;
+-    generate
+-        if (CANNY_EN) begin : g_canny
+-            // frame vsync delayed to the grayscale stream (3 cycles: lb1+debayer+gray)
+-            reg [2:0] vs_d;
+-            always @(posedge clk or negedge rst_n) begin
+-                if (!rst_n) vs_d <= 3'd0;
+-                else         vs_d <= {vs_d[1:0], vs_act};
+-            end
+-            wire gauss_vsync = vs_d[2];
+-
+-            wire [7:0] gauss_y;
+-            wire       gauss_valid;
+-            gaussian5x5 #(.WIDTH(W-2), .DW(8)) u_gauss (
+-                .clk(clk), .rst_n(rst_n),
+-                .din(gray_y), .din_valid(gray_valid), .din_vsync(gauss_vsync),
+-                .dout(gauss_y), .dout_valid(gauss_valid)
+-            );
+-
+-            wire [7:0] c00,c01,c02,c10,c11,c12,c20,c21,c22;
+-            wire       c_valid;
+-            wire [15:0] c_x, c_y;
+-
+-            line_buffer_3x3 #(.WIDTH(W-6), .DW(8)) u_lb3c (
+-                .clk(clk), .rst_n(rst_n),
+-                .din(gauss_y), .din_valid(gauss_valid), .din_vsync(1'b0),
+-                .w00(c00), .w01(c01), .w02(c02),
+-                .w10(c10), .w11(c11), .w12(c12),
+-                .w20(c20), .w21(c21), .w22(c22),
+-                .dout_valid(c_valid), .dout_x(c_x), .dout_y(c_y)
+-            );
+-
+-            wire [11:0] c_grad;
+-            wire        c_sob_valid, c_sob_edge;
+-            wire signed [10:0] c_gx, c_gy;
+-            sobel u_sob_c (
+-                .clk(clk), .rst_n(rst_n),
+-                .w00(c00), .w01(c01), .w02(c02),
+-                .w10(c10), .w11(c11), .w12(c12),
+-                .w20(c20), .w21(c21), .w22(c22),
+-                .in_valid(c_valid), .threshold({4'b0000, threshold}),
+-                .grad(c_grad), .gx(c_gx), .gy(c_gy),
+-                .edge_out(c_sob_edge), .out_valid(c_sob_valid)
+-            );
+-
+-            // gradient-magnitude 3x3 window for NMS (+1 cycle)
+-            wire [11:0] n00,n01,n02,n10,n11,n12,n20,n21,n22;
+-            wire        n_valid;
+-            line_buffer_3x3 #(.WIDTH(W-8), .DW(12)) u_lbgc (
+-                .clk(clk), .rst_n(rst_n),
+-                .din(c_grad), .din_valid(c_sob_valid), .din_vsync(1'b0),
+-                .w00(n00), .w01(n01), .w02(n02),
+-                .w10(n10), .w11(n11), .w12(n12),
+-                .w20(n20), .w21(n21), .w22(n22),
+-                .dout_valid(n_valid), .dout_x(), .dout_y()
+-            );
+-
+-            reg signed [10:0] c_gx_d1, c_gy_d1;
+-            always @(posedge clk or negedge rst_n) begin
+-                if (!rst_n) begin
+-                    c_gx_d1 <= 11'sd0;
+-                    c_gy_d1 <= 11'sd0;
+-                end else begin
+-                    c_gx_d1 <= c_gx;
+-                    c_gy_d1 <= c_gy;
+-                end
+-            end
+-
+-            wire [11:0] nms_grad;
+-            wire        nms_valid;
+-            canny_nms u_nms_c (
+-                .g00(n00), .g01(n01), .g02(n02),
+-                .g10(n10), .g11(n11), .g12(n12),
+-                .g20(n20), .g21(n21), .g22(n22),
+-                .gx(c_gx_d1), .gy(c_gy_d1),
+-                .in_valid(n_valid),
+-                .grad_out(nms_grad), .out_valid(nms_valid)
+-            );
+-
+-            wire hyst_edge, hyst_valid;
+-            canny_hysteresis #(.WIDTH(W-10)) u_hyst (
+-                .clk(clk), .rst_n(rst_n),
+-                .grad(nms_grad), .in_valid(nms_valid), .din_vsync(1'b0),
+-                .high_thr(threshold), .low_thr(threshold >> 1),
+-                .edge_out(hyst_edge), .out_valid(hyst_valid)
+-            );
+-
+-            wire link_edge, link_valid;
+-            if (LINK_EN) begin : g_link
+-                edge_link3x3 #(.WIDTH(W-12)) u_link_c (
+-                    .clk(clk), .rst_n(rst_n),
+-                    .in_edge(hyst_edge), .in_valid(hyst_valid),
+-                    .gx(c_gx_d1), .gy(c_gy_d1),
+-                    .out_edge(link_edge), .out_valid(link_valid)
+-                );
+-                assign canny_path_data  = (link_valid && link_edge) ? 8'hFF : 8'h00;
+-                assign canny_path_valid = link_valid;
+-            end else begin : g_no_link
+-                assign link_edge  = 1'b0;
+-                assign link_valid = 1'b0;
+-                assign canny_path_data  = (hyst_valid && hyst_edge) ? 8'hFF : 8'h00;
+-                assign canny_path_valid = hyst_valid;
+-            end
+-        end else begin : g_no_canny
+-            assign canny_path_data  = 8'h00;
+-            assign canny_path_valid = 1'b0;
+-        end
+-    endgenerate
+-
+-    //--------------------------------------------------------------------------
+-    // output timing delayed by exactly LATENCY cycles
+-    //--------------------------------------------------------------------------
+-    wire [7:0]        dly_data;
+-    wire              dly_valid, dly_de, dly_hs, dly_vs;
+-    wire [X_BITS-1:0] dly_x;
+-    wire [Y_BITS-1:0] dly_y;
+-
+-    video_delay #(
+-        .STAGES(LATENCY), .X_BITS(X_BITS), .Y_BITS(Y_BITS)
+-    ) u_dly (
+-        .clk(clk), .rst_n(rst_n),
+-        .in_data(in_data), .in_valid(in_valid), .in_de(in_de),
+-        .in_hs(in_hs), .in_vs(in_vs),
+-        .in_x(in_x), .in_y(in_y),
+-        .out_data(dly_data), .out_valid(dly_valid), .out_de(dly_de),
+-        .out_hs(dly_hs), .out_vs(dly_vs),
+-        .out_x(dly_x), .out_y(dly_y)
+-    );
+-
+-    // binary edge image; blank outside the fully-valid region
+-    assign out_data  = CANNY_EN ? canny_path_data : sob_path_data;
+-    assign out_valid = CANNY_EN ? canny_path_valid : sob_path_valid;
+-    assign out_de    = dly_de;
+-    assign out_hs    = dly_hs;
+-    assign out_vs    = dly_vs;
+-    assign out_x     = (dly_x >= 11'd3) ? (dly_x - 11'd3) : {X_BITS{1'b0}};
+-    assign out_y     = (dly_y >= 11'd3) ? (dly_y - 11'd3) : {Y_BITS{1'b0}};
+-
+-endmodule
++//==============================================================================
++// alg_top : A-group image pipeline behind the frozen pixel-stream interface.
++//
++//   RAW8 Bayer (BGGR)
++//     -> line_buffer_3x3 -> debayer      (RAW8 -> RGB888)
++//     -> grayscale                        (RGB888 -> Y8)
++//     -> line_buffer_3x3 -> median3x3     (3x3 median denoise)
++//     -> [CANNY] gaussian5x5              (5x5 Gaussian pre-smoothing)
++//     -> line_buffer_3x3 -> sobel         (grad = |Gx|+|Gy|, gx, gy)
++//     -> [CANNY] line_buffer_3x3(grad) -> canny_nms -> canny_hysteresis
++//        [SOBEL] nms3x3 -> edge_link3x3
++//     -> out_data = binary edge (0xFF / 0x00)
++//     -> out_gray = median-filtered Y8, delayed to the same cycle
++//
++// EDGE_FILTER selects the Sobel input (CANNY_EN=0 path):
++//   0 = raw grayscale
++//   1 = plain 3x3 median
++//   2 = adaptive median (only isolated outliers are replaced)
++//
++// CANNY_EN selects the full Canny chain (Gaussian -> Sobel -> NMS ->
++// double-threshold hysteresis) instead of the plain Sobel threshold path.
++// With CANNY_EN=1 the edge path always uses the Gaussian-smoothed grayscale,
++// so EDGE_FILTER is ignored; the median stage still runs to feed out_gray.
++//
++// Port list matches rtl/alg/alg_stub.v exactly, so it is a drop-in replacement.
++// de/hs/vs/x/y are delayed by LATENCY cycles so they stay aligned with data.
++//==============================================================================
++module alg_top #(
++    parameter WIDTH   = 640,
++    parameter X_BITS  = 11,
++    parameter Y_BITS  = 11,
++    parameter LATENCY = 12,   // 1(lb1)+1(debayer)+1(gray)+1(lb2)+3(median)+1(lb3)+4(sobel)
++    parameter EDGE_FILTER = 1,
++    parameter NMS_EN = 0,
++    parameter LINK_EN = 0,
++    parameter CANNY_EN = 0,  // 1 = Gaussian + NMS + hysteresis (Canny) edge path
++    parameter CANNY_PREMEDIAN = 0,
++    parameter CANNY_GAUSS3 = 0,
++    parameter CANNY_SCHARR = 0,
++    parameter CANNY_NMS_INTERP = 0
++)(
++    input  wire                clk,
++    input  wire                rst_n,
++
++    input  wire [7:0]          in_data,
++    input  wire                in_valid,
++    input  wire                in_de,
++    input  wire                in_hs,
++    input  wire                in_vs,
++    input  wire [X_BITS-1:0]   in_x,
++    input  wire [Y_BITS-1:0]   in_y,
++
++    input  wire [7:0]          threshold,
++
++    output wire [7:0]          out_data,
++    output wire [7:0]          out_gray,
++    output wire                out_valid,
++    output wire                out_de,
++    output wire                out_hs,
++    output wire                out_vs,
++    output wire [X_BITS-1:0]   out_x,
++    output wire [Y_BITS-1:0]   out_y
++);
++
++    localparam W = WIDTH;
++
++    // interface vsync is active-low; the line buffer reset is active-high
++    wire vs_act = ~in_vs;
++
++    //--------------------------------------------------------------------------
++    // stage 1 : 3x3 window + debayer  (RAW8 -> RGB888)
++    //--------------------------------------------------------------------------
++    wire [7:0] a00,a01,a02,a10,a11,a12,a20,a21,a22;
++    wire       a_valid;
++    wire [15:0] a_x, a_y;
++
++    line_buffer_3x3 #(.WIDTH(W), .DW(8)) u_lb1 (
++        .clk(clk), .rst_n(rst_n),
++        .din(in_data), .din_valid(in_valid), .din_vsync(vs_act),
++        .w00(a00), .w01(a01), .w02(a02),
++        .w10(a10), .w11(a11), .w12(a12),
++        .w20(a20), .w21(a21), .w22(a22),
++        .dout_valid(a_valid), .dout_x(a_x), .dout_y(a_y)
++    );
++
++    wire [7:0] rgb_r, rgb_g, rgb_b;
++    wire       rgb_valid;
++    debayer u_db (
++        .clk(clk), .rst_n(rst_n),
++        .w00(a00), .w01(a01), .w02(a02),
++        .w10(a10), .w11(a11), .w12(a12),
++        .w20(a20), .w21(a21), .w22(a22),
++        .in_valid(a_valid), .in_x(a_x), .in_y(a_y),
++        .r(rgb_r), .g(rgb_g), .b(rgb_b), .out_valid(rgb_valid)
++    );
++
++    //--------------------------------------------------------------------------
++    // stage 2 : grayscale
++    //--------------------------------------------------------------------------
++    wire [7:0] gray_y;
++    wire       gray_valid, gray_href, gray_vsync;
++    grayscale u_gray (
++        .clk(clk), .rst_n(rst_n),
++        .r(rgb_r), .g(rgb_g), .b(rgb_b),
++        .in_valid(rgb_valid), .in_href(1'b1), .in_vsync(1'b0),
++        .y(gray_y), .out_valid(gray_valid),
++        .out_href(gray_href), .out_vsync(gray_vsync)
++    );
++
++    //--------------------------------------------------------------------------
++    // stage 3 : 3x3 window + median filter   (always on: feeds out_gray)
++    //--------------------------------------------------------------------------
++    wire [7:0] b00,b01,b02,b10,b11,b12,b20,b21,b22;
++    wire       b_valid;
++    wire [15:0] b_x, b_y;
++
++    line_buffer_3x3 #(.WIDTH(W-2), .DW(8)) u_lb2 (
++        .clk(clk), .rst_n(rst_n),
++        .din(gray_y), .din_valid(gray_valid), .din_vsync(1'b0),
++        .w00(b00), .w01(b01), .w02(b02),
++        .w10(b10), .w11(b11), .w12(b12),
++        .w20(b20), .w21(b21), .w22(b22),
++        .dout_valid(b_valid), .dout_x(b_x), .dout_y(b_y)
++    );
++
++    wire [7:0] med_y, med_adaptive;
++    wire       med_valid;
++    median3x3 u_med (
++        .clk(clk), .rst_n(rst_n),
++        .w00(b00), .w01(b01), .w02(b02),
++        .w10(b10), .w11(b11), .w12(b12),
++        .w20(b20), .w21(b21), .w22(b22),
++        .in_valid(b_valid), .med(med_y), .med_adaptive(med_adaptive),
++        .out_valid(med_valid)
++    );
++
++    // Delay the median-filtered grayscale by the remaining lb3 + Sobel
++    // latency (1 + 4 = 5 cycles), so out_gray is aligned with out_data.
++    reg [7:0] gray_d1, gray_d2, gray_d3, gray_d4, gray_d5, gray_d6, gray_d7;
++    always @(posedge clk or negedge rst_n) begin
++        if (!rst_n) begin
++            gray_d1 <= 8'd0; gray_d2 <= 8'd0; gray_d3 <= 8'd0;
++            gray_d4 <= 8'd0; gray_d5 <= 8'd0; gray_d6 <= 8'd0; gray_d7 <= 8'd0;
++        end else begin
++            gray_d1 <= med_y;
++            gray_d2 <= gray_d1;
++            gray_d3 <= gray_d2;
++            gray_d4 <= gray_d3;
++            gray_d5 <= gray_d4;
++            gray_d6 <= gray_d5;
++            gray_d7 <= gray_d6;
++        end
++    end
++    assign out_gray = (LATENCY >= 14) ? gray_d7 :
++                      (LATENCY >= 13) ? gray_d6 : gray_d5;
++
++    // Align the unfiltered grayscale with med_y at the input of lb3:
++    // gray_y is 4 cycles earlier (lb2 + 3-stage median).
++    reg [7:0] gray_raw_d1, gray_raw_d2, gray_raw_d3, gray_raw_d4;
++    always @(posedge clk or negedge rst_n) begin
++        if (!rst_n) begin
++            gray_raw_d1 <= 8'd0; gray_raw_d2 <= 8'd0;
++            gray_raw_d3 <= 8'd0; gray_raw_d4 <= 8'd0;
++        end else begin
++            gray_raw_d1 <= gray_y;
++            gray_raw_d2 <= gray_raw_d1;
++            gray_raw_d3 <= gray_raw_d2;
++            gray_raw_d4 <= gray_raw_d3;
++        end
++    end
++    wire [7:0] edge_src = (EDGE_FILTER == 2) ? med_adaptive :
++                          (EDGE_FILTER == 1) ? med_y : gray_raw_d4;
++
++    //==========================================================================
++    // SOBEL EDGE PATH  (CANNY_EN = 0)
++    //==========================================================================
++    wire [7:0]  sob_path_data;
++    wire        sob_path_valid;
++    generate
++        if (!CANNY_EN) begin : g_sobel
++            //--------------------------------------------------------------------------
++            // stage 4 : 3x3 window + sobel
++            //--------------------------------------------------------------------------
++            wire [7:0] c00,c01,c02,c10,c11,c12,c20,c21,c22;
++            wire       c_valid;
++            wire [15:0] c_x, c_y;
++
++            line_buffer_3x3 #(.WIDTH(W-4), .DW(8)) u_lb3 (
++                .clk(clk), .rst_n(rst_n),
++                .din(edge_src), .din_valid(med_valid), .din_vsync(1'b0),
++                .w00(c00), .w01(c01), .w02(c02),
++                .w10(c10), .w11(c11), .w12(c12),
++                .w20(c20), .w21(c21), .w22(c22),
++                .dout_valid(c_valid), .dout_x(c_x), .dout_y(c_y)
++            );
++
++            wire [11:0] grad;
++            wire        sob_valid, sob_edge;
++            wire signed [10:0] sob_gx, sob_gy;
++            sobel u_sob (
++                .clk(clk), .rst_n(rst_n),
++                .w00(c00), .w01(c01), .w02(c02),
++                .w10(c10), .w11(c11), .w12(c12),
++                .w20(c20), .w21(c21), .w22(c22),
++                .in_valid(c_valid), .threshold({4'b0000, threshold}),
++                .grad(grad), .gx(sob_gx), .gy(sob_gy),
++                .edge_out(sob_edge), .out_valid(sob_valid)
++            );
++
++            // Optional NMS + local hysteresis.  The gradient-magnitude line buffer
++            // adds one cycle, so the top level instantiates this path with LATENCY=13.
++            wire [11:0] nms_g00, nms_g01, nms_g02, nms_g10, nms_g11, nms_g12,
++                        nms_g20, nms_g21, nms_g22;
++            wire        nms_g_valid, nms_edge, nms_valid;
++            reg signed [10:0] nms_gx_d1, nms_gy_d1;
++            wire        link_edge, link_valid;
++
++            if (NMS_EN) begin : g_nms
++                line_buffer_3x3 #(.WIDTH(W-4), .DW(12)) u_lbg (
++                    .clk(clk), .rst_n(rst_n),
++                    .din(grad), .din_valid(sob_valid), .din_vsync(1'b0),
++                    .w00(nms_g00), .w01(nms_g01), .w02(nms_g02),
++                    .w10(nms_g10), .w11(nms_g11), .w12(nms_g12),
++                    .w20(nms_g20), .w21(nms_g21), .w22(nms_g22),
++                    .dout_valid(nms_g_valid), .dout_x(), .dout_y()
++                );
++
++                always @(posedge clk or negedge rst_n) begin
++                    if (!rst_n) begin
++                        nms_gx_d1 <= 11'sd0;
++                        nms_gy_d1 <= 11'sd0;
++                    end else begin
++                        nms_gx_d1 <= sob_gx;
++                        nms_gy_d1 <= sob_gy;
++                    end
++                end
++
++                nms3x3 u_nms (
++                    .clk(clk), .rst_n(rst_n),
++                    .g00(nms_g00), .g01(nms_g01), .g02(nms_g02),
++                    .g10(nms_g10), .g11(nms_g11), .g12(nms_g12),
++                    .g20(nms_g20), .g21(nms_g21), .g22(nms_g22),
++                    .gx(nms_gx_d1), .gy(nms_gy_d1),
++                    .in_valid(nms_g_valid),
++                    .high_thr(threshold), .low_thr(threshold >> 1),
++                    .edge_out(nms_edge), .out_valid(nms_valid)
++                );
++
++                if (LINK_EN) begin : g_link
++                    edge_link3x3 #(.WIDTH(W-4)) u_link (
++                        .clk(clk), .rst_n(rst_n),
++                        .in_edge(nms_edge), .in_valid(nms_valid),
++                        .gx(nms_gx_d1), .gy(nms_gy_d1),
++                        .out_edge(link_edge), .out_valid(link_valid)
++                    );
++                end else begin : g_no_link
++                    assign link_edge  = 1'b0;
++                    assign link_valid = 1'b0;
++                end
++            end else begin : g_no_nms
++                assign nms_g00 = 12'd0; assign nms_g01 = 12'd0; assign nms_g02 = 12'd0;
++                assign nms_g10 = 12'd0; assign nms_g11 = 12'd0; assign nms_g12 = 12'd0;
++                assign nms_g20 = 12'd0; assign nms_g21 = 12'd0; assign nms_g22 = 12'd0;
++                assign nms_g_valid = 1'b0;
++                assign nms_edge  = 1'b0;
++                assign nms_valid = 1'b0;
++                assign link_edge  = 1'b0;
++                assign link_valid = 1'b0;
++                always @(posedge clk or negedge rst_n) begin
++                    if (!rst_n) begin
++                        nms_gx_d1 <= 11'sd0;
++                        nms_gy_d1 <= 11'sd0;
++                    end else begin
++                        nms_gx_d1 <= sob_gx;
++                        nms_gy_d1 <= sob_gy;
++                    end
++                end
++            end
++
++            assign sob_path_data = LINK_EN
++                                 ? ((link_valid && link_edge) ? 8'hFF : 8'h00)
++                                 : (NMS_EN
++                                    ? ((nms_valid && nms_edge) ? 8'hFF : 8'h00)
++                                    : ((sob_valid && sob_edge) ? 8'hFF : 8'h00));
++            assign sob_path_valid = LINK_EN ? link_valid : (NMS_EN ? nms_valid : sob_valid);
++        end else begin : g_no_sobel
++            assign sob_path_data  = 8'h00;
++            assign sob_path_valid = 1'b0;
++        end
++    endgenerate
++
++    //==========================================================================
++    // CANNY EDGE PATH  (CANNY_EN = 1)
++    //   grayscale -> gaussian5x5 -> 3x3 sobel -> NMS -> hysteresis -> link
++    //   Total latency: 1(lb1)+1(debayer)+1(gray)+2(gauss)+1(lb3)+4(sobel)
++    //                  +1(lbg)+0(nms)+1(hyst)+1(link) = 13 cycles.
++    //==========================================================================
++    wire [7:0]  canny_path_data;
++    wire        canny_path_valid;
++    generate
++        if (CANNY_EN) begin : g_canny
++            localparam CANNY_SRC_W  = CANNY_PREMEDIAN ? (W - 4) : (W - 2);
++            localparam GAUSS5_OUT_W = CANNY_SRC_W - 4;
++            localparam LB3_IN_W     = GAUSS5_OUT_W - (CANNY_GAUSS3 ? 2 : 0);
++            localparam GRAD_LB_W    = LB3_IN_W - 2;
++            localparam HYST_W       = GRAD_LB_W - 2;
++            localparam LINK_W       = HYST_W - 2;
++            // Frame vsync follows either the raw grayscale path (3 stages) or
++            // the adaptive-median path (+lb2 and three median stages).
++            reg [6:0] vs_d;
++            always @(posedge clk or negedge rst_n) begin
++                if (!rst_n) vs_d <= 7'd0;
++                else         vs_d <= {vs_d[5:0], vs_act};
++            end
++            wire gauss_vsync = CANNY_PREMEDIAN ? vs_d[6] : vs_d[2];
++            wire [7:0] canny_src = CANNY_PREMEDIAN ? med_adaptive : gray_y;
++            wire       canny_src_valid = CANNY_PREMEDIAN ? med_valid : gray_valid;
++
++            wire [7:0] gauss_y;
++            wire       gauss_valid;
++            gaussian5x5 #(.WIDTH(CANNY_SRC_W), .DW(8)) u_gauss (
++                .clk(clk), .rst_n(rst_n),
++                .din(canny_src), .din_valid(canny_src_valid), .din_vsync(gauss_vsync),
++                .dout(gauss_y), .dout_valid(gauss_valid)
++            );
++
++            wire [7:0] gauss3_y;
++            wire       gauss3_valid;
++            if (CANNY_GAUSS3) begin : g_smooth3
++                gaussian3x3 #(.WIDTH(GAUSS5_OUT_W), .DW(8)) u_gauss3 (
++                    .clk(clk), .rst_n(rst_n),
++                    .din(gauss_y), .din_valid(gauss_valid), .din_vsync(1'b0),
++                    .dout(gauss3_y), .dout_valid(gauss3_valid)
++                );
++            end else begin : g_no_smooth3
++                assign gauss3_y = gauss_y;
++                assign gauss3_valid = gauss_valid;
++            end
++
++            wire [7:0] edge_smooth_y = CANNY_GAUSS3 ? gauss3_y : gauss_y;
++            wire       edge_smooth_valid = CANNY_GAUSS3 ? gauss3_valid : gauss_valid;
++
++            wire [7:0] c00,c01,c02,c10,c11,c12,c20,c21,c22;
++            wire       c_valid;
++            wire [15:0] c_x, c_y;
++
++            line_buffer_3x3 #(.WIDTH(LB3_IN_W), .DW(8)) u_lb3c (
++                .clk(clk), .rst_n(rst_n),
++                .din(edge_smooth_y), .din_valid(edge_smooth_valid), .din_vsync(1'b0),
++                .w00(c00), .w01(c01), .w02(c02),
++                .w10(c10), .w11(c11), .w12(c12),
++                .w20(c20), .w21(c21), .w22(c22),
++                .dout_valid(c_valid), .dout_x(c_x), .dout_y(c_y)
++            );
++
++            wire [11:0] c_grad;
++            wire        c_sob_valid, c_sob_edge;
++            wire signed [10:0] c_gx, c_gy;
++            if (CANNY_SCHARR) begin : g_scharr_sob
++                scharr u_sob_c (
++                    .clk(clk), .rst_n(rst_n),
++                    .w00(c00), .w01(c01), .w02(c02),
++                    .w10(c10), .w11(c11), .w12(c12),
++                    .w20(c20), .w21(c21), .w22(c22),
++                    .in_valid(c_valid), .threshold({4'b0000, threshold}),
++                    .grad(c_grad), .gx(c_gx), .gy(c_gy),
++                    .edge_out(c_sob_edge), .out_valid(c_sob_valid)
++                );
++            end else begin : g_sobel_sob
++                sobel u_sob_c (
++                    .clk(clk), .rst_n(rst_n),
++                    .w00(c00), .w01(c01), .w02(c02),
++                    .w10(c10), .w11(c11), .w12(c12),
++                    .w20(c20), .w21(c21), .w22(c22),
++                    .in_valid(c_valid), .threshold({4'b0000, threshold}),
++                    .grad(c_grad), .gx(c_gx), .gy(c_gy),
++                    .edge_out(c_sob_edge), .out_valid(c_sob_valid)
++                );
++            end
++
++            // gradient-magnitude 3x3 window for NMS (+1 cycle)
++            wire [11:0] n00,n01,n02,n10,n11,n12,n20,n21,n22;
++            wire        n_valid;
++            line_buffer_3x3 #(.WIDTH(GRAD_LB_W), .DW(12)) u_lbgc (
++                .clk(clk), .rst_n(rst_n),
++                .din(c_grad), .din_valid(c_sob_valid), .din_vsync(1'b0),
++                .w00(n00), .w01(n01), .w02(n02),
++                .w10(n10), .w11(n11), .w12(n12),
++                .w20(n20), .w21(n21), .w22(n22),
++                .dout_valid(n_valid), .dout_x(), .dout_y()
++            );
++
++            reg signed [10:0] c_gx_d1, c_gy_d1;
++            always @(posedge clk or negedge rst_n) begin
++                if (!rst_n) begin
++                    c_gx_d1 <= 11'sd0;
++                    c_gy_d1 <= 11'sd0;
++                end else begin
++                    c_gx_d1 <= c_gx;
++                    c_gy_d1 <= c_gy;
++                end
++            end
++
++            wire [11:0] nms_grad;
++            wire        nms_valid;
++            if (CANNY_NMS_INTERP) begin : g_interp_nms
++                canny_nms_interp u_nms_c (
++                    .g00(n00), .g01(n01), .g02(n02),
++                    .g10(n10), .g11(n11), .g12(n12),
++                    .g20(n20), .g21(n21), .g22(n22),
++                    .gx(c_gx_d1), .gy(c_gy_d1),
++                    .in_valid(n_valid),
++                    .grad_out(nms_grad), .out_valid(nms_valid)
++                );
++            end else begin : g_sector_nms
++                canny_nms u_nms_c (
++                    .g00(n00), .g01(n01), .g02(n02),
++                    .g10(n10), .g11(n11), .g12(n12),
++                    .g20(n20), .g21(n21), .g22(n22),
++                    .gx(c_gx_d1), .gy(c_gy_d1),
++                    .in_valid(n_valid),
++                    .grad_out(nms_grad), .out_valid(nms_valid)
++                );
++            end
++
++            wire hyst_edge, hyst_valid;
++            canny_hysteresis #(.WIDTH(HYST_W)) u_hyst (
++                .clk(clk), .rst_n(rst_n),
++                .grad(nms_grad), .in_valid(nms_valid), .din_vsync(1'b0),
++                .high_thr(threshold), .low_thr(threshold >> 1),
++                .edge_out(hyst_edge), .out_valid(hyst_valid)
++            );
++
++            wire link_edge, link_valid;
++            if (LINK_EN) begin : g_link
++                edge_link3x3 #(.WIDTH(LINK_W)) u_link_c (
++                    .clk(clk), .rst_n(rst_n),
++                    .in_edge(hyst_edge), .in_valid(hyst_valid),
++                    .gx(c_gx_d1), .gy(c_gy_d1),
++                    .out_edge(link_edge), .out_valid(link_valid)
++                );
++                assign canny_path_data  = (link_valid && link_edge) ? 8'hFF : 8'h00;
++                assign canny_path_valid = link_valid;
++            end else begin : g_no_link
++                assign link_edge  = 1'b0;
++                assign link_valid = 1'b0;
++                assign canny_path_data  = (hyst_valid && hyst_edge) ? 8'hFF : 8'h00;
++                assign canny_path_valid = hyst_valid;
++            end
++        end else begin : g_no_canny
++            assign canny_path_data  = 8'h00;
++            assign canny_path_valid = 1'b0;
++        end
++    endgenerate
++
++    //--------------------------------------------------------------------------
++    // output timing delayed by exactly LATENCY cycles
++    //--------------------------------------------------------------------------
++    wire [7:0]        dly_data;
++    wire              dly_valid, dly_de, dly_hs, dly_vs;
++    wire [X_BITS-1:0] dly_x;
++    wire [Y_BITS-1:0] dly_y;
++
++    video_delay #(
++        .STAGES(LATENCY), .X_BITS(X_BITS), .Y_BITS(Y_BITS)
++    ) u_dly (
++        .clk(clk), .rst_n(rst_n),
++        .in_data(in_data), .in_valid(in_valid), .in_de(in_de),
++        .in_hs(in_hs), .in_vs(in_vs),
++        .in_x(in_x), .in_y(in_y),
++        .out_data(dly_data), .out_valid(dly_valid), .out_de(dly_de),
++        .out_hs(dly_hs), .out_vs(dly_vs),
++        .out_x(dly_x), .out_y(dly_y)
++    );
++
++    // binary edge image; blank outside the fully-valid region
++    assign out_data  = CANNY_EN ? canny_path_data : sob_path_data;
++    assign out_valid = CANNY_EN ? canny_path_valid : sob_path_valid;
++    assign out_de    = dly_de;
++    assign out_hs    = dly_hs;
++    assign out_vs    = dly_vs;
++    assign out_x     = (dly_x >= 11'd3) ? (dly_x - 11'd3) : {X_BITS{1'b0}};
++    assign out_y     = (dly_y >= 11'd3) ? (dly_y - 11'd3) : {Y_BITS{1'b0}};
++
++endmodule
+
+--- a/system_dbg_top.v
++++ b/system_dbg_top.v
+@@ -1,988 +1,998 @@
+-//==============================================================================
+-// system_dbg_top : camera-debug build of the system integration
+-//                  version dbg_20260927_01  (2026-09-27)
+-//
+-//   Derivative of rtl/top/system_top.v (kept for reference / rollback).
+-//   The datapath is identical, the differences are:
+-//
+-//     1. all 8 board LEDs (led0..led7) are used as a *fault bank* that says
+-//        where the camera data path stopped (see DBG LED BANK below);
+-//     2. the I2C master reports a sticky NACK flag (i2c_any_nack);
+-//     3. the MIPI LP/HS polarity is selectable with two localparams
+-//        (see MIPI POLARITY SWITCHES below);
+-//     4. NEW in this version: the csi_rx soft IP gets its own 50 MHz clock
+-//        (clk_csi) instead of clk_sys = 24 MHz - see CLOCKING below.
+-//
+-//   Everything downstream of `csi_valid` is unchanged, so a picture that
+-//   works here works in proj/system as well.
+-//
+-//------------------------------------------------------------------------------
+-// ALIGNED WITH THE BOARD VENDOR'S OWN SC2210 DEMO  (2026-09-27)
+-//
+-//   Reference: VF-Ti60F225_HDK_V2.1_20251009\
+-//              07-FPGA_HDL_Image-2023.2\04-1_Ti60_SC2210_HDMI_1080P60
+-//   (same board + same sensor; ships a built bitstream, so it is known good)
+-//
+-//     * MIPI data lanes stay on the vendor's pins - peri.xml:
+-//         csi_rxc  = GPIOR_PN_17
+-//         csi_rxd0 = GPIOR_PN_18     (NOT PN_15: the xlsx "MIPI_RX0" is a
+-//         csi_rxd1 = GPIOR_PN_19      board net name, not the D-PHY
+-//         csi_rxd2 = GPIOR_PN_15      block_def order used by the hard block)
+-//         csi_rxd3 = GPIOR_PN_16
+-//       static delay 17, is_fifo = false  -> same as the vendor demo.
+-//     * polarity INV_HS=1 / SWAP_LP=1 = vendor's CSI_RXD_INV = 4'b1111
+-//       ("data can be inverted with swapped LP data and flipped HS data").
+-//     * the camera initialisation table is the vendor's own
+-//       I2C_SC2210_19201080_4Lanes_Config.v, 266 writes, identical.
+-//
+-//   The vendor's demo does NOT use the Efinix csi2_rx IP - it uses its own
+-//   MIPIRx4LaneFre block - so the IP has to be given a sane environment:
+-//   both available references run the RX core clock at 96..100 MHz while
+-//   this project used to run it at 24 MHz.
+-//------------------------------------------------------------------------------
+-// CLOCKING  (peri.xml sys_pll, VCO = 3000 MHz)
+-//
+-//     clk_sys       24.0 MHz   I2C master + housekeeping
+-//     clk_pixel     25.0 MHz   video/display pipeline
+-//     clk_pixel_10x 250  MHz   HDMI serializer
+-//     clk_csi       50.0 MHz   csi_rx soft IP core clock  <-- new here
+-//
+-//   Reason: ip/csi_rx was generated with CLOCK_FREQ_MHZ = 50 (documented
+-//   range 40..100 MHz) but was fed clk_sys = 24 MHz, i.e. below the minimum.
+-//   The IP converts its LP timing constants with this number, so feeding a
+-//   clock that matches the parameter is the parameter-consistent setting.
+-//   If a future experiment shows the IP wants the references' 96..100 MHz,
+-//   only the clk_csi out_divider in the peri.xml has to change (60 -> 30).
+-//
+-//   Domain split: csi_rx uses clk_csi for `clk`/`axi_clk`, csi_rxc_i (the
+-//   D-PHY byte clock, ~31 MHz) for `clk_byte_HS`, and clk_pixel for the pixel
+-//   side.  Everything downstream is still clk_pixel only.
+-//------------------------------------------------------------------------------
+-//
+-// KEYS
+-//   key_up : increase the Sobel threshold (as before).
+-//   key_dn : short press cycles the display mode
+-//              0 raw -> 1 grayscale -> 2 edge -> 3 split
+-//              -> 4 red-edge overlay -> 0 ...
+-//            hold 1 s toggles the LED fault/timing panel.
+-//   Power-on mode is 3 (the legacy split view).
+-//
+-// NOTE ON THE CLOCK DOMAINS
+-//   csi_rx already contains the byte-clock -> pixel-clock dual-clock FIFO, so
+-//   everything downstream of csi_rx lives in clk_pixel.  The only remaining
+-//   asynchronous inputs are the two push buttons, which are debounced
+-//   directly in clk_pixel.
+-//==============================================================================
+-module system_dbg_top (
+-    input  wire        clk_24m,          // 24 MHz crystal (PLL reference)
+-    output wire        sys_pll_rstn_o,   // PLL reset, active low -> drive high
+-    input  wire        sys_pll_lock,     // PLL locked
+-    input  wire        clk_sys,          // PLL out : 24 MHz system clock
+-    input  wire        clk_pixel,        // PLL out : 25.0 MHz pixel clock
+-    input  wire        clk_pixel_10x,    // PLL out : 250 MHz serializer clock
+-    input  wire        clk_csi,          // PLL out : 50 MHz csi_rx core clock
+-
+-    //------------------------------------------------------------------
+-    // MIPI-CSI I2C
+-    //------------------------------------------------------------------
+-    output wire        csi_scl_o,
+-    output wire        csi_scl_oe,
+-    input  wire        csi_scl_i,
+-    output wire        csi_sda_o,
+-    output wire        csi_sda_oe,
+-    input  wire        csi_sda_i,
+-
+-    //------------------------------------------------------------------
+-    // MIPI-CSI RXC (clock lane)
+-    //------------------------------------------------------------------
+-    input  wire        csi_rxc_lp_p_i,
+-    input  wire        csi_rxc_lp_n_i,
+-    output wire        csi_rxc_hs_en_o,
+-    output wire        csi_rxc_hs_term_en_o,
+-    input  wire        csi_rxc_i,        // D-PHY RX byte clock (CLKOUT)
+-
+-    //------------------------------------------------------------------
+-    // MIPI-CSI RXD0
+-    //------------------------------------------------------------------
+-    output wire        csi_rxd0_rst_o,
+-    output wire        csi_rxd0_hs_en_o,
+-    output wire        csi_rxd0_hs_term_en_o,
+-    input  wire        csi_rxd0_lp_p_i,
+-    input  wire        csi_rxd0_lp_n_i,
+-    input  wire [7:0]  csi_rxd0_hs_i,
+-
+-    //------------------------------------------------------------------
+-    // MIPI-CSI RXD1
+-    //------------------------------------------------------------------
+-    output wire        csi_rxd1_rst_o,
+-    output wire        csi_rxd1_hs_en_o,
+-    output wire        csi_rxd1_hs_term_en_o,
+-    input  wire        csi_rxd1_lp_p_i,
+-    input  wire        csi_rxd1_lp_n_i,
+-    input  wire [7:0]  csi_rxd1_hs_i,
+-
+-    //------------------------------------------------------------------
+-    // MIPI-CSI RXD2
+-    //------------------------------------------------------------------
+-    output wire        csi_rxd2_rst_o,
+-    output wire        csi_rxd2_hs_en_o,
+-    output wire        csi_rxd2_hs_term_en_o,
+-    input  wire        csi_rxd2_lp_p_i,
+-    input  wire        csi_rxd2_lp_n_i,
+-    input  wire [7:0]  csi_rxd2_hs_i,
+-
+-    //------------------------------------------------------------------
+-    // MIPI-CSI RXD3
+-    //------------------------------------------------------------------
+-    output wire        csi_rxd3_rst_o,
+-    output wire        csi_rxd3_hs_en_o,
+-    output wire        csi_rxd3_hs_term_en_o,
+-    input  wire        csi_rxd3_lp_p_i,
+-    input  wire        csi_rxd3_lp_n_i,
+-    input  wire [7:0]  csi_rxd3_hs_i,
+-
+-    //------------------------------------------------------------------
+-    // HDMI TMDS (10-bit parallel -> on-chip LVDS TX 10:1 serializer)
+-    //------------------------------------------------------------------
+-    output wire [9:0]  hdmi_txc_o,
+-    output wire [9:0]  hdmi_txd0_o,
+-    output wire [9:0]  hdmi_txd1_o,
+-    output wire [9:0]  hdmi_txd2_o,
+-    output wire        hdmi_txc_oe,
+-    output wire        hdmi_txd0_oe,
+-    output wire        hdmi_txd1_oe,
+-    output wire        hdmi_txd2_oe,
+-    output wire        hdmi_txc_rst_o,
+-    output wire        hdmi_txd0_rst_o,
+-    output wire        hdmi_txd1_rst_o,
+-    output wire        hdmi_txd2_rst_o,
+-
+-    //------------------------------------------------------------------
+-    // User IO : 2 keys + the 8 board LEDs
+-    //------------------------------------------------------------------
+-    input  wire        key_up,
+-    input  wire        key_dn,
+-    output wire [7:0]  led            // LED0..LED7, ACTIVE LOW (0 = lit)
+-);
+-
+-    //--------------------------------------------------------------------------
+-    // Latency of the algorithm branch.
+-    //--------------------------------------------------------------------------
+-    localparam ALG_LATENCY = 12;
+-    localparam X_BITS      = 11;
+-    localparam Y_BITS      = 11;
+-
+-    //--------------------------------------------------------------------------
+-    // Full-resolution edge algorithm selector.
+-    //   0 = original Sobel + NMS + local hysteresis (baseline, LATENCY 14)
+-    //   1 = Canny : Gaussian -> Sobel -> NMS -> hysteresis -> linking (LATENCY 13)
+-    // Rebuild with EDGE_ALGO=0 to fall back to the baseline bitstream for an
+-    // on-the-bench A/B comparison.
+-    //--------------------------------------------------------------------------
+-    localparam EDGE_ALGO        = 1;
+-    localparam ALG_LATENCY_FULL = (EDGE_ALGO == 1) ? 13 : 14;
+-
+-    //--------------------------------------------------------------------------
+-    // MIPI POLARITY SWITCHES  (Debug.md 4.2 - "suspect #1")
+-    //
+-    //   The vendor example and rtl/camera/camera_top.v pass LP_P->LP_P,
+-    //   LP_N->LP_N and the HS bytes un-inverted.  The old system_top.v passed
+-    //   them swapped / inverted *without a comment*.  Both variants are
+-    //   available here; only one can be right for this board.
+-    //
+-    //   Sweep order (change one letter, rebuild, watch LED3 + LED6):
+-    //     INV_HS=1, SWAP_LP=1   <- default, identical to the old system_top.v
+-    //     INV_HS=0, SWAP_LP=0   <- identical to the vendor example
+-    //     INV_HS=1, SWAP_LP=0
+-    //     INV_HS=0, SWAP_LP=1
+-    //--------------------------------------------------------------------------
+-    localparam INV_HS  = 1'b1;   // 1 = invert the received HS byte
+-    localparam SWAP_LP = 1'b1;   // 1 = swap LP P/N
+-
+-    wire [7:0] hs0 = INV_HS ? (csi_rxd0_hs_i ^ 8'hff) : csi_rxd0_hs_i;
+-    wire [7:0] hs1 = INV_HS ? (csi_rxd1_hs_i ^ 8'hff) : csi_rxd1_hs_i;
+-    wire [7:0] hs2 = INV_HS ? (csi_rxd2_hs_i ^ 8'hff) : csi_rxd2_hs_i;
+-    wire [7:0] hs3 = INV_HS ? (csi_rxd3_hs_i ^ 8'hff) : csi_rxd3_hs_i;
+-
+-    wire [3:0] lp_p = SWAP_LP ? {csi_rxd3_lp_n_i, csi_rxd2_lp_n_i,
+-                                 csi_rxd1_lp_n_i, csi_rxd0_lp_n_i}
+-                              : {csi_rxd3_lp_p_i, csi_rxd2_lp_p_i,
+-                                 csi_rxd1_lp_p_i, csi_rxd0_lp_p_i};
+-    wire [3:0] lp_n = SWAP_LP ? {csi_rxd3_lp_p_i, csi_rxd2_lp_p_i,
+-                                 csi_rxd1_lp_p_i, csi_rxd0_lp_p_i}
+-                              : {csi_rxd3_lp_n_i, csi_rxd2_lp_n_i,
+-                                 csi_rxd1_lp_n_i, csi_rxd0_lp_n_i};
+-
+-    //--------------------------------------------------------------------------
+-    // Reset
+-    //--------------------------------------------------------------------------
+-    assign sys_pll_rstn_o = 1'b1;
+-
+-    reg rst_n_pix;
+-    always @(posedge clk_pixel or negedge sys_pll_lock) begin
+-        if (!sys_pll_lock) rst_n_pix <= 1'b0;
+-        else               rst_n_pix <= 1'b1;
+-    end
+-
+-    wire rst_n_sys = sys_pll_lock;
+-
+-    //--------------------------------------------------------------------------
+-    // I2C : SC2210 register LUT + master  (265 entries -> 9-bit index)
+-    //--------------------------------------------------------------------------
+-    wire [8:0]  i2c_index;
+-    wire [23:0] i2c_lut;
+-    wire [8:0]  i2c_size;
+-    wire        i2c_done;
+-    wire        i2c_nack;
+-
+-    // dbg_20260928_01: local 640x480 (VGA60) table - the sensor now outputs the
+-    // 640x480 centre crop directly at 59.52 Hz / 31.25 kHz lines, so the display
+-    // can show it 1:1 (see the file header for the register derivation).
+-    I2C_SC2210_640x480_4Lanes_Config u_sc2210_cfg (
+-        .LUT_INDEX(i2c_index),
+-        .LUT_DATA (i2c_lut),
+-        .LUT_SIZE (i2c_size)
+-    );
+-
+-    i2c_timing_ctrl_16bit #(
+-        .CLK_FREQ(24_000000),
+-        .I2C_FREQ(400_000),
+-        .IDX_W   (9)
+-    ) u_i2c (
+-        .clk             (clk_sys),
+-        .rst_n           (rst_n_sys),
+-        .i2c_sclk        (csi_scl_o),
+-        .i2c_sdat_IN     (csi_sda_i),
+-        .i2c_sdat_OUT    (csi_sda_o),
+-        .i2c_sdat_OE     (csi_sda_oe),
+-        .i2c_config_size (i2c_size),
+-        .i2c_config_index(i2c_index),
+-        .i2c_config_data ({8'h60, i2c_lut}),
+-        .i2c_config_done (i2c_done),
+-        .i2c_any_nack    (i2c_nack),
+-        .i2c_rdata       ()
+-    );
+-    assign csi_scl_oe = 1'b1;          // SCL is always driven by the master
+-
+-    //--------------------------------------------------------------------------
+-    // csi_rx soft IP (AXI tied off)
+-    //--------------------------------------------------------------------------
+-    wire        rxd0_fifo_rd, rxd1_fifo_rd, rxd2_fifo_rd, rxd3_fifo_rd;
+-    wire        rxd0_fifo_empty = 1'b0;
+-    wire        rxd1_fifo_empty = 1'b0;
+-    wire        rxd2_fifo_empty = 1'b0;
+-    wire        rxd3_fifo_empty = 1'b0;
+-
+-    wire        csi_valid;
+-    wire [63:0] csi_data;
+-    wire        csi_hsync;
+-    wire        csi_vsync;
+-    wire [15:0] csi_word_count;
+-    wire [5:0]  csi_datatype;
+-    wire        csi_irq;
+-
+-    csi_rx u_csi_rx (
+-        .reset_n         (rst_n_sys),
+-        .clk             (clk_csi),        // 50 MHz (was clk_sys = 24 MHz)
+-        .reset_byte_HS_n (rst_n_sys),
+-        .clk_byte_HS     (csi_rxc_i),
+-        .reset_pixel_n   (rst_n_pix),
+-        .clk_pixel       (clk_pixel),
+-
+-        .Rx_LP_CLK_P     (csi_rxc_lp_p_i),
+-        .Rx_LP_CLK_N     (csi_rxc_lp_n_i),
+-        .Rx_HS_enable_C  (csi_rxc_hs_en_o),
+-        .LVDS_termen_C   (csi_rxc_hs_term_en_o),
+-
+-        .Rx_LP_D_P       (lp_p),
+-        .Rx_LP_D_N       (lp_n),
+-        .Rx_HS_D_0       (hs0),
+-        .Rx_HS_D_1       (hs1),
+-        .Rx_HS_D_2       (hs2),
+-        .Rx_HS_D_3       (hs3),
+-        .Rx_HS_D_4       (8'h00),
+-        .Rx_HS_D_5       (8'h00),
+-        .Rx_HS_D_6       (8'h00),
+-        .Rx_HS_D_7       (8'h00),
+-        .Rx_HS_enable_D  ({csi_rxd3_hs_en_o, csi_rxd2_hs_en_o,
+-                           csi_rxd1_hs_en_o, csi_rxd0_hs_en_o}),
+-        .LVDS_termen_D   ({csi_rxd3_hs_term_en_o, csi_rxd2_hs_term_en_o,
+-                           csi_rxd1_hs_term_en_o, csi_rxd0_hs_term_en_o}),
+-        .fifo_rd_enable  ({rxd3_fifo_rd, rxd2_fifo_rd,
+-                           rxd1_fifo_rd, rxd0_fifo_rd}),
+-        .fifo_rd_empty   ({rxd3_fifo_empty, rxd2_fifo_empty,
+-                           rxd1_fifo_empty, rxd0_fifo_empty}),
+-        .DLY_enable_D    (),
+-        .DLY_inc_D       (),
+-        .u_dly_enable_D  (4'b0000),
+-        .u_dly_inc_D     (4'b0000),
+-
+-        .axi_clk         (clk_csi),
+-        .axi_reset_n     (rst_n_sys),
+-        .axi_awaddr      (6'b0),
+-        .axi_awvalid     (1'b0),
+-        .axi_awready     (),
+-        .axi_wdata       (32'b0),
+-        .axi_wvalid      (1'b0),
+-        .axi_wready      (),
+-        .axi_bvalid      (),
+-        .axi_bready      (1'b0),
+-        .axi_araddr      (6'b0),
+-        .axi_arvalid     (1'b0),
+-        .axi_arready     (),
+-        .axi_rdata       (),
+-        .axi_rvalid      (),
+-        .axi_rready      (1'b1),
+-
+-        .vsync_vc0       (csi_vsync),
+-        .vsync_vc1       (), .vsync_vc2(), .vsync_vc3(),
+-        .vsync_vc4       (), .vsync_vc5(), .vsync_vc6(), .vsync_vc7(),
+-        .vsync_vc8       (), .vsync_vc9(), .vsync_vc10(), .vsync_vc11(),
+-        .vsync_vc12      (), .vsync_vc13(), .vsync_vc14(), .vsync_vc15(),
+-        .hsync_vc0       (csi_hsync),
+-        .hsync_vc1       (), .hsync_vc2(), .hsync_vc3(),
+-        .hsync_vc4       (), .hsync_vc5(), .hsync_vc6(), .hsync_vc7(),
+-        .hsync_vc8       (), .hsync_vc9(), .hsync_vc10(), .hsync_vc11(),
+-        .hsync_vc12      (), .hsync_vc13(), .hsync_vc14(), .hsync_vc15(),
+-        .vc              (),
+-        .vcx             (),
+-        .word_count      (csi_word_count),
+-        .shortpkt_data_field(),
+-        .datatype        (csi_datatype),
+-        .pixel_per_clk   (),
+-        .pixel_data      (csi_data),
+-        .pixel_data_valid(csi_valid),
+-        .irq             (csi_irq)
+-    );
+-
+-    assign csi_rxd0_rst_o = ~rst_n_sys;
+-    assign csi_rxd1_rst_o = ~rst_n_sys;
+-    assign csi_rxd2_rst_o = ~rst_n_sys;
+-    assign csi_rxd3_rst_o = ~rst_n_sys;
+-
+-    //--------------------------------------------------------------------------
+-    // CSI packed stream -> frozen 640x480 pixel stream
+-    //--------------------------------------------------------------------------
+-    wire [7:0]  pix_r, pix_g, pix_b;
+-    wire        pix_valid, pix_de, pix_hsync, pix_vsync;
+-    wire [10:0] pix_x, pix_y, pix_hcnt, pix_y_act;
+-    wire        line_late, capture_ovf;
+-
+-    //--------------------------------------------------------------------------
+-    // dbg_20261012_03 : FRAME BUFFER instead of the 1-line ping-pong buffer.
+-    //   A 320x240x8b frame (76.8 kB in block RAM) is filled from the camera and
+-    //   read out by the display's own free-running 640x480@59.5 Hz timing, so
+-    //   the picture position no longer depends on the camera's VTS/frame rate
+-    //   at all - that is what finally removes the rolling (the sensor turned
+-    //   out to be stuck at ~1112-line frames, i.e. ~28 fps, and refuses to be
+-    //   programmed to 60 fps).
+-    //   Same output interface as video_source, so everything downstream is
+-    //   unchanged.  line_late / capture_ovf are tied low inside the module.
+-    //--------------------------------------------------------------------------
+-    wire        store_written;      // 1 = the frame buffer has been filled at least once
+-
+-    // The colour preview store is instantiated after camera_line_unpack (it
+-    // needs the full-resolution pixel stream for debayering).
+-
+-    //--------------------------------------------------------------------------
+-    // Full-resolution camera pixel stream (64-bit CSI beats -> 1 pixel/clk)
+-    //--------------------------------------------------------------------------
+-    wire [7:0]  cam_pix_data;
+-    wire        cam_pix_valid, cam_pix_de, cam_pix_hs, cam_pix_vs;
+-    wire [10:0] cam_pix_x, cam_pix_y;
+-
+-    camera_line_unpack u_cam_unpack (
+-        .clk(clk_pixel), .rst_n(rst_n_pix),
+-        .in_valid(csi_valid), .in_hs(csi_hsync), .in_vs(csi_vsync),
+-        .in_data(csi_data),
+-        .out_data(cam_pix_data), .out_valid(cam_pix_valid),
+-        .out_de(cam_pix_de), .out_hs(cam_pix_hs), .out_vs(cam_pix_vs),
+-        .out_x(cam_pix_x), .out_y(cam_pix_y)
+-    );
+-
+-    //--------------------------------------------------------------------------
+-    // Colour preview: full-res RAW -> 3x3 window -> debayer -> RGB332 store.
+-    // The store has the same 320x240x8b footprint as the old RAW preview, so
+-    // mode 0 becomes a colour image without spending extra memory blocks.
+-    //--------------------------------------------------------------------------
+-    wire [7:0] cb00, cb01, cb02, cb10, cb11, cb12, cb20, cb21, cb22;
+-    wire       cb_valid;
+-    wire [15:0] cb_x, cb_y;
+-
+-    line_buffer_3x3 #(.WIDTH(640), .DW(8)) u_cam_lb (
+-        .clk(clk_pixel), .rst_n(rst_n_pix),
+-        .din(cam_pix_data), .din_valid(cam_pix_valid), .din_vsync(~cam_pix_vs),
+-        .w00(cb00), .w01(cb01), .w02(cb02),
+-        .w10(cb10), .w11(cb11), .w12(cb12),
+-        .w20(cb20), .w21(cb21), .w22(cb22),
+-        .dout_valid(cb_valid), .dout_x(cb_x), .dout_y(cb_y)
+-    );
+-
+-    wire [7:0] cam_r, cam_g, cam_b;
+-    wire       cam_rgb_valid;
+-    debayer u_cam_db (
+-        .clk(clk_pixel), .rst_n(rst_n_pix),
+-        .w00(cb00), .w01(cb01), .w02(cb02),
+-        .w10(cb10), .w11(cb11), .w12(cb12),
+-        .w20(cb20), .w21(cb21), .w22(cb22),
+-        .in_valid(cb_valid), .in_x(cb_x), .in_y(cb_y),
+-        .r(cam_r), .g(cam_g), .b(cam_b), .out_valid(cam_rgb_valid)
+-    );
+-
+-    // line / frame activity aligned with the debayer output (lb 1 + debayer 1)
+-    reg [1:0] cam_hs_d, cam_vs_d;
+-    always @(posedge clk_pixel or negedge rst_n_pix) begin
+-        if (!rst_n_pix) begin
+-            cam_hs_d <= 2'd0;
+-            cam_vs_d <= 2'd0;
+-        end else begin
+-            cam_hs_d <= {cam_hs_d[0], cam_pix_hs};
+-            cam_vs_d <= {cam_vs_d[0], cam_pix_vs};
+-        end
+-    end
+-
+-    // White balance for the colour preview.  Tuned from on-board feedback:
+-    // no WB -> green, R/B 1.5x -> slightly red.  New balance: R x1.25 and
+-    // B x1.625 (G unchanged), which also reduces R-channel highlight clipping.
+-    // The two gains are the tuning knobs: change the shifts here if needed.
+-    wire [8:0] cam_r_wb9 = {1'b0, cam_r} + {2'b00, cam_r[7:2]};                    // 1.25x
+-    wire [8:0] cam_b_wb9 = {1'b0, cam_b} + {2'b00, cam_b[7:1]} + {4'b0000, cam_b[7:3]}; // 1.625x
+-    wire [7:0] cam_r_wb  = cam_r_wb9[8] ? 8'hFF : cam_r_wb9[7:0];
+-    wire [7:0] cam_b_wb  = cam_b_wb9[8] ? 8'hFF : cam_b_wb9[7:0];
+-
+-    rgb565_preview_store #(
+-        .H_ACTIVE(640), .H_FRONT(16), .H_SYNC(96), .H_BACK(48),
+-        .V_ACTIVE(480), .V_FRONT(10), .V_SYNC(2), .V_BACK(33),
+-        .BILINEAR_H(0), .SAT_EN(0)
+-    ) u_color_store (
+-        .clk(clk_pixel), .rst_n(rst_n_pix),
+-        .in_r(cam_r_wb), .in_g(cam_g), .in_b(cam_b_wb), .in_valid(cam_rgb_valid),
+-        .in_line_act(cam_hs_d[1]), .in_frame_act(cam_vs_d[1]),
+-        .pix_r(pix_r), .pix_g(pix_g), .pix_b(pix_b),
+-        .pix_valid(pix_valid), .pix_de(pix_de),
+-        .pix_hsync(pix_hsync), .pix_vsync(pix_vsync),
+-        .pix_x(pix_x), .pix_hcnt(pix_hcnt), .pix_y(pix_y),
+-        .pix_y_act(pix_y_act),
+-        .line_late(line_late), .capture_ovf(capture_ovf),
+-        .buf_written(store_written)
+-    );
+-
+-    //==========================================================================
+-    // DEBUG LED BANK  (camera data validity)
+-    //
+-    //   All 8 board LEDs are driven by rtl/dbg/dbg_led_bank.v, which owns the
+-    //   camera-alive detector, the sticky "have I ever seen it" flags and the
+-    //   LED polarity.  Read the table at the top of that file - the one line
+-    //   version is:
+-    //
+-    //         所有 LED 全灭  =  相机数据正在流动（数据通路是通的）
+-    //         哪一盏亮      =  卡在哪一级（LED0..LED7 = PLL/I2C/CSI/…）
+-    //
+-    //   cam_alive also selects the display source (camera image vs color bars).
+-    //
+-    //   NOTE: the fault flags are split by clock domain.  The clk_pixel logic
+-    //   analyzer may only sample dbg_fault_pix / dbg_sticky; probing the I2C /
+-    //   PLL flags from it costs a clk_sys -> clk_pixel setup path (~1.1 ns,
+-    //   measured) - those live in dbg_fault_ctrl and are probed by a second LA
+-    //   core clocked by clk_sys (see dbg_core.selection.json).
+-    //==========================================================================
+-    wire        cam_alive;
+-    wire [4:0]  dbg_fault_pix;
+-    wire [2:0]  dbg_fault_ctrl;
+-    wire [4:0]  dbg_sticky;
+-    wire [7:0]  led_ladder;     // fault-ladder pattern from dbg_led_bank
+-
+-    dbg_led_bank #(
+-        .CAM_ALIVE_TIMEOUT(21'd1_000_000)          // ~40 ms @25.0 MHz
+-    ) u_dbg_leds (
+-        .clk           (clk_pixel),
+-        .rst_n         (rst_n_pix),
+-        .csi_valid     (csi_valid),
+-        .csi_hsync     (csi_hsync),
+-        .csi_vsync     (csi_vsync),
+-        .csi_datatype  (csi_datatype),
+-        .pix_valid     (pix_valid),
+-        .capture_ovf   (capture_ovf),
+-        .sys_pll_lock  (sys_pll_lock),
+-        .i2c_done      (i2c_done),
+-        .i2c_nack      (i2c_nack),
+-        .cam_alive     (cam_alive),
+-        .led           (led_ladder),        // dbg_20261009_01: panel mux below
+-        .dbg_fault_pix (dbg_fault_pix),
+-        .dbg_fault_ctrl(dbg_fault_ctrl),
+-        .dbg_sticky    (dbg_sticky)
+-    );
+-
+-    //==========================================================================
+-    // DIAGNOSTIC TIMING COUNTERS  (new in dbg_20260929_01)
+-    //
+-    //   Three numbers that settle whether the sensor accepted the geometry
+-    //   (HTS/VTS) writes in I2C_SC2210_640x480_4Lanes_Config.v.  Read them with
+-    //   the Efinity Debugger (they are probes la0_probe13..15), no trigger
+-    //   needed - just Run Immediate and read the values:
+-    //
+-    //     dbg_t_hsync        clk_pixel cycles (40 ns) since the last hsync edge
+-    //                          ~800  (32.0 us) -> HTS took effect (31.25 kHz)
+-    //                          ~539  (21.6 us) -> HTS did NOT take effect (66.7 kHz, 1080p value)
+-    //                          other           -> neither: sensor ignored both writes
+-    //     dbg_lines_vsync    hsync pulses since the last vsync edge
+-    //                          525  -> VTS took effect (59.5 Hz frame)
+-    //                          1112 -> VTS did NOT take effect (1080p value)
+-    //     dbg_t_vsync        clk_pixel cycles since the last vsync edge
+-    //                          line_period * lines_vsync (consistency check,
+-    //                          and it gives the real frame rate directly)
+-    //
+-    //   Rule of thumb: for a picture that does not slide we need
+-    //   dbg_t_hsync == 800 and dbg_lines_vsync == 525.
+-    //==========================================================================
+-    reg  [19:0] dbg_t_vsync;      // up to 41.9 ms @25 MHz
+-    reg  [15:0] dbg_t_hsync;      // up to 2.6 ms
+-    reg  [12:0] dbg_lines_vsync;  // up to 8191 lines
+-    reg         csi_vsync_1p, csi_hsync_1p;
+-
+-    // values latched at the sync edges -> stable, usable for the LED panel
+-    reg  [15:0] dbg_line_period_lat;   // previous line period  [clk_pixel]
+-    reg  [12:0] dbg_lines_frame_lat;   // previous frame length [lines]
+-    reg  [19:0] dbg_frame_period_lat;  // previous frame period [clk_pixel]
+-
+-    always @(posedge clk_pixel or negedge rst_n_pix) begin
+-        if (!rst_n_pix) begin
+-            dbg_t_vsync     <= 20'd0;
+-            dbg_t_hsync     <= 16'd0;
+-            dbg_lines_vsync <= 13'd0;
+-            csi_vsync_1p    <= 1'b0;
+-            csi_hsync_1p    <= 1'b0;
+-            dbg_line_period_lat  <= 16'd0;
+-            dbg_lines_frame_lat  <= 13'd0;
+-            dbg_frame_period_lat <= 20'd0;
+-        end else begin
+-            csi_vsync_1p <= csi_vsync;
+-            csi_hsync_1p <= csi_hsync;
+-
+-            // vertical sync edge : start a new frame, latch the finished one
+-            if (csi_vsync & ~csi_vsync_1p) begin
+-                dbg_frame_period_lat <= (dbg_t_vsync == 20'd0) ? dbg_frame_period_lat
+-                                                               : dbg_t_vsync;
+-                dbg_lines_frame_lat  <= (dbg_lines_vsync == 13'd0) ? dbg_lines_frame_lat
+-                                                                   : dbg_lines_vsync;
+-                dbg_t_vsync     <= 20'd0;
+-                dbg_lines_vsync <= 13'd0;
+-            end else if (dbg_t_vsync != 20'hFFFFF) begin
+-                dbg_t_vsync     <= dbg_t_vsync + 1'b1;
+-            end
+-
+-            // horizontal sync edge : one more line
+-            if (csi_hsync & ~csi_hsync_1p) begin
+-                if (dbg_t_hsync != 16'd0) dbg_line_period_lat <= dbg_t_hsync;
+-                dbg_t_hsync     <= 16'd0;
+-                dbg_lines_vsync <= (csi_vsync & ~csi_vsync_1p) ? 13'd1
+-                                                               : (dbg_lines_vsync + 1'b1);
+-            end else if (dbg_t_hsync != 16'hFFFF) begin
+-                dbg_t_hsync     <= dbg_t_hsync + 1'b1;
+-            end
+-        end
+-    end
+-
+-    //--------------------------------------------------------------------------
+-    // vsync sanity flag  (new in dbg_20261012_01)
+-    //   The first genlock build reacted to EVERY csi_vsync rising edge.  If the
+-    //   camera's vsync carries extra pulses (or is much faster than a frame),
+-    //   that restarts the display frame constantly and the monitor loses sync -
+-    //   which is exactly the "all LEDs dark + black screen" we saw.
+-    //   Here any two rising edges closer than 2 ms set a sticky flag, and the
+-    //   flag is refreshed every ~1.34 s, so the LED shows "recently" rather
+-    //   than "ever".  The genlock itself only accepts edges that are at least
+-    //   one full frame apart (see vga_timing V_MINCNT).
+-    //--------------------------------------------------------------------------
+-    localparam [19:0] VSYNC_MIN_INT = 20'd50000;    // 2 ms @ 25 MHz
+-
+-    reg        dbg_vsync_bad;        // 1 = two vsync edges were < 2 ms apart
+-    reg [24:0] dbg_vsync_bad_clr;    // refresh window, ~1.34 s
+-
+-    always @(posedge clk_pixel or negedge rst_n_pix) begin
+-        if (!rst_n_pix) begin
+-            dbg_vsync_bad     <= 1'b0;
+-            dbg_vsync_bad_clr <= 25'd0;
+-        end else begin
+-            dbg_vsync_bad_clr <= dbg_vsync_bad_clr + 1'b1;
+-            if (dbg_vsync_bad_clr == 25'd0) dbg_vsync_bad <= 1'b0;
+-            if ((csi_vsync & ~csi_vsync_1p) && (dbg_t_vsync < VSYNC_MIN_INT))
+-                dbg_vsync_bad <= 1'b1;
+-        end
+-    end
+-
+-
+-    //--------------------------------------------------------------------------
+-    // Keys (debounced in the pixel domain)
+-    //
+-    //   key_up : Sobel threshold up (unchanged)
+-    //   key_dn : short press -> cycle display mode
+-    //            hold 1 s    -> toggle the LED fault/timing panel
+-    //--------------------------------------------------------------------------
+-    localparam CNT_20MS_25M = 500_000;   // 20 ms at 25.0 MHz
+-
+-    wire key_up_p;
+-    wire key_dn_level, key_dn_press, key_dn_release;
+-
+-    key_debounce #(.CNT_W(20), .CNT_MAX(CNT_20MS_25M), .PRESS_LOW(1'b1)) u_db_up (
+-        .clk(clk_pixel), .rst_n(rst_n_pix), .key_in(key_up),
+-        .key_out(), .press(key_up_p), .released()
+-    );
+-
+-    key_debounce #(.CNT_W(20), .CNT_MAX(CNT_20MS_25M), .PRESS_LOW(1'b1)) u_db_dn (
+-        .clk(clk_pixel), .rst_n(rst_n_pix), .key_in(key_dn),
+-        .key_out(key_dn_level), .press(key_dn_press), .released(key_dn_release)
+-    );
+-
+-    wire [7:0] threshold;
+-    // INIT was 64 for the plain Sobel path.  The Canny path smooths the image
+-    // with a 5x5 Gaussian first, which lowers the gradient magnitudes, so the
+-    // high threshold starts lower (32); the low threshold is threshold>>1.
+-    // key_up still raises it in +4 steps (saturating at 255).
+-    threshold_reg #(.W(8), .INIT(8'd32), .STEP(8'd4)) u_thr (
+-        .clk(clk_pixel), .rst_n(rst_n_pix),
+-        .key_up(key_up_p), .key_down(1'b0),
+-        .threshold(threshold)
+-    );
+-
+-    // Display mode:
+-    //   0 = raw camera stream
+-    //   1 = median-filtered grayscale
+-    //   2 = binary edge map
+-    //   3 = legacy split view (raw | edge)
+-    //   4 = red edge overlay on the original image (PDF high-level challenge)
+-    // Power-on default is 3 so the first picture matches the previous build.
+-    reg [2:0] disp_mode;
+-
+-    // 1 s at 25 MHz.  A short press cycles disp_mode on release; a long hold
+-    // toggles the LED panel and does NOT also change the display mode.
+-    localparam [24:0] DN_LONG_CNT = 25'd25_000_000;
+-    reg [24:0] dn_hold_cnt;
+-    reg        dn_long_done;
+-    reg        led_mode;      // 0 = fault ladder, 1 = timing dial
+-
+-    always @(posedge clk_pixel or negedge rst_n_pix) begin
+-        if (!rst_n_pix) begin
+-            disp_mode   <= 3'd3;
+-            dn_hold_cnt <= 25'd0;
+-            dn_long_done <= 1'b0;
+-            led_mode    <= 1'b0;
+-        end else begin
+-            if (key_dn_press) begin
+-                dn_hold_cnt  <= 25'd0;
+-                dn_long_done <= 1'b0;
+-            end else if (key_dn_level && !dn_long_done) begin
+-                if (dn_hold_cnt >= DN_LONG_CNT - 1'b1) begin
+-                    dn_long_done <= 1'b1;
+-                    led_mode     <= ~led_mode;
+-                end else begin
+-                    dn_hold_cnt <= dn_hold_cnt + 1'b1;
+-                end
+-            end
+-
+-            if (key_dn_release) begin
+-                // 6 modes (0..5), wrap 5 -> 0
+-                if (!dn_long_done) disp_mode <= (disp_mode == 3'd4)
+-                                              ? 3'd0 : disp_mode + 3'd1;
+-                dn_hold_cnt  <= 25'd0;
+-                dn_long_done <= 1'b0;
+-            end
+-        end
+-    end
+-
+-    //==========================================================================
+-    // LED PANEL with isolation-build measurement probe
+-    //
+-    //   Two instruments share the 8 LEDs; hold key_dn for 1 s to switch:
+-    //
+-    //     mode 0 (power-on default) : the camera fault ladder, exactly as
+-    //                                 before (all LEDs dark = data flowing)
+-    //     mode 1                    : the CAMERA TIMING DIAL - the numbers we
+-    //                                 have to watch to make the picture stop
+-    //                                 rolling.  A lit LED means "yes" for its
+-    //                                 row; the target combinations are marked.
+-    //
+-    //   DIAL (mode 1)                          lit means
+-    //   LED0  line period < 760 clk  ( <33 kHz)  line rate too FAST
+-    //   LED1  line period 760..840   (~31.25 kHz) LINE RATE OK  <-- target
+-    //   LED2  line period > 840 clk  ( <30 kHz)  line rate too SLOW
+-    //   LED3  at least one complete frame period has been captured
+-    //   LED4  no complete frame period captured yet
+-    //   LED5  MEASUREMENT PROBE: active-low 4-clock pulse on each vsync
+-    //         rising edge. At 25 MHz the low pulse is 160 ns. Probe LED5 /
+-    //         GPIO P13; this output is independent of the LED panel mode.
+-    //   LED6  vsync edges < 2 ms apart (sticky)  csi_vsync carries extra pulses
+-    //   LED7  cam_alive & store_written          camera flowing AND the frame
+-    //                                            buffer has been filled at least
+-    //                                            once (dbg_20261012_03: capture_ovf
+-    //                                            no longer exists, so this row now
+-    //                                            watches the frame store instead)
+-    //
+-    //   The old "fps_ok 370k..470k" and "vts_ok 483..567 lines" claims were
+-    //   removed because they contradicted the recorded ~28 fps / 1112-line
+-    //   camera behavior. They were debug hypotheses, not measurement evidence.
+-    //   LED5 now provides a calibrated pulse suitable for external counting.
+-    //==========================================================================
+-    wire line_fast = (dbg_line_period_lat != 16'd0) && (dbg_line_period_lat < 16'd760);
+-    wire line_ok   = (dbg_line_period_lat >= 16'd760) && (dbg_line_period_lat <= 16'd840);
+-    wire line_slow = (dbg_line_period_lat >  16'd840);
+-
+-    wire        measure_frame_tick;
+-    wire        measure_lines_pulse;
+-    wire [19:0] measure_frame_period;
+-    wire [12:0] measure_frame_lines;
+-    wire        measure_sample_valid;
+-
+-    measurement_timing #(.PULSE_CYCLES(4)) u_measure (
+-        .clk(clk_pixel), .rst_n(rst_n_pix),
+-        .csi_vsync(csi_vsync), .csi_hsync(csi_hsync),
+-        .frame_tick_o(measure_frame_tick),
+-        .lines_pulse_o(measure_lines_pulse),
+-        .frame_period_o(measure_frame_period),
+-        .lines_frame_o(measure_frame_lines),
+-        .sample_valid_o(measure_sample_valid)
+-    );
+-
+-    wire [7:0] led_dial = {                   // 1 = this LED is lit
+-        (cam_alive & store_written),          // LED7 : data flowing + buffer filled
+-        dbg_vsync_bad,                        // LED6 : csi_vsync has extra pulses
+-        measure_frame_tick,                   // LED5 : measurement pulse
+-        ~measure_sample_valid,                // LED4 : no complete period yet
+-        measure_sample_valid,                 // LED3 : complete period captured
+-        line_slow,                            // LED2 : line rate too slow
+-        line_ok,                              // LED1 : line rate ~31.25 kHz ok
+-        line_fast                             // LED0 : line rate too fast
+-    };
+-
+-    // LEDs are active-low. LED5 gives a 160 ns frame-start pulse. LED3 gives a
+-    // low pulse whose width equals lines/frame * 40 ns. Both override the
+-    // normal panel for the duration of the pulse, without entering video logic.
+-    wire [7:0] led_panel = led_mode ? ~led_dial : led_ladder;
+-    wire [7:0] measure_override =
+-        (measure_frame_tick ? 8'b0010_0000 : 8'b0000_0000) |
+-        (measure_lines_pulse ? 8'b0000_1000 : 8'b0000_0000);
+-    assign led = led_panel & ~measure_override;
+-
+-    //--------------------------------------------------------------------------
+-    // Colour preview delay: 16 cycles = 12 (edge alignment) + 4 (median)
+-    //--------------------------------------------------------------------------
+-    wire [7:0]  raw_r, raw_g, raw_b;
+-    wire        raw_valid, raw_de, raw_hs, raw_vs;
+-    wire [10:0] raw_x, raw_y;
+-
+-    rgb_video_delay #(
+-        .STAGES(16), .X_BITS(X_BITS), .Y_BITS(Y_BITS)
+-    ) u_rgb_delay (
+-        .clk(clk_pixel), .rst_n(rst_n_pix),
+-        .in_r(pix_r), .in_g(pix_g), .in_b(pix_b),
+-        .in_valid(pix_valid), .in_de(pix_de),
+-        .in_hs(pix_hsync), .in_vs(pix_vsync),
+-        .in_x(pix_x), .in_y(pix_y),
+-        .out_r(raw_r), .out_g(raw_g), .out_b(raw_b),
+-        .out_valid(raw_valid), .out_de(raw_de),
+-        .out_hs(raw_hs), .out_vs(raw_vs),
+-        .out_x(raw_x), .out_y(raw_y)
+-    );
+-
+-    //--------------------------------------------------------------------------
+-    // Median-filtered grayscale preview (mode 1) from the colour luma.
+-    //   luma at pix timing -> 3x3 median (4 cycles) -> 12-cycle delay = 16,
+-    //   aligned with raw_r/g/b and edge_data.
+-    //--------------------------------------------------------------------------
+-    // 16-bit products: 8-bit constants here would truncate each product to
+-    // 8 bits and then the >>8 would make the whole luma zero (black mode 1).
+-    wire [15:0] pix_luma_sum = 16'd77 * pix_r + 16'd150 * pix_g + 16'd29 * pix_b;
+-    wire [7:0]  pix_luma     = pix_luma_sum[15:8];
+-    // Debug-core compatibility: la0 still samples the old "pix_data" probe.
+-    // Keep an 8-bit alias (the colour luma) at the top level.
+-    wire [7:0] pix_data = pix_luma;
+-    wire [7:0] gm00, gm01, gm02, gm10, gm11, gm12, gm20, gm21, gm22;
+-    wire       gm_wvalid;
+-    wire [15:0] gm_wx, gm_wy;
+-
+-    line_buffer_3x3 #(.WIDTH(640), .DW(8)) u_gray_lb (
+-        .clk(clk_pixel), .rst_n(rst_n_pix),
+-        .din(pix_luma), .din_valid(pix_de), .din_vsync(~pix_vsync),
+-        .w00(gm00), .w01(gm01), .w02(gm02),
+-        .w10(gm10), .w11(gm11), .w12(gm12),
+-        .w20(gm20), .w21(gm21), .w22(gm22),
+-        .dout_valid(gm_wvalid), .dout_x(gm_wx), .dout_y(gm_wy)
+-    );
+-
+-    wire [7:0] gray_med, gray_adapt;
+-    wire       gray_valid;
+-    median3x3 u_gray_med (
+-        .clk(clk_pixel), .rst_n(rst_n_pix),
+-        .w00(gm00), .w01(gm01), .w02(gm02),
+-        .w10(gm10), .w11(gm11), .w12(gm12),
+-        .w20(gm20), .w21(gm21), .w22(gm22),
+-        .in_valid(gm_wvalid), .med(gray_med), .med_adaptive(gray_adapt),
+-        .out_valid(gray_valid)
+-    );
+-
+-    wire [7:0]  gray_d;
+-    wire        gray_d_valid, gray_d_de, gray_d_hs, gray_d_vs;
+-    wire [10:0] gray_d_x, gray_d_y;
+-    video_delay #(
+-        .STAGES(12), .X_BITS(X_BITS), .Y_BITS(Y_BITS)
+-    ) u_gray_dly (
+-        .clk(clk_pixel), .rst_n(rst_n_pix),
+-        .in_data(gray_med), .in_valid(gray_valid), .in_de(gray_valid),
+-        .in_hs(1'b1), .in_vs(1'b0),
+-        .in_x({X_BITS{1'b0}}), .in_y({Y_BITS{1'b0}}),
+-        .out_data(gray_d), .out_valid(gray_d_valid), .out_de(gray_d_de),
+-        .out_hs(gray_d_hs), .out_vs(gray_d_vs),
+-        .out_x(gray_d_x), .out_y(gray_d_y)
+-    );
+-
+-    //--------------------------------------------------------------------------
+-    // Full-resolution edge branch: camera pixels -> NMS/hysteresis -> 1-bit
+-    // frame store.  This path does NOT go through the 320x240 preview store,
+-    // so edge detail is not lost by the 2:1 decimation.
+-    //--------------------------------------------------------------------------
+-    wire [7:0]  edge_full_data;
+-    wire        edge_full_valid, edge_full_de, edge_full_hs, edge_full_vs;
+-    wire [10:0] edge_full_x, edge_full_y;
+-
+-    alg_top #(
+-        .WIDTH(640), .LATENCY(ALG_LATENCY_FULL), .X_BITS(X_BITS), .Y_BITS(Y_BITS),
+-        .EDGE_FILTER(2'd2), .NMS_EN(EDGE_ALGO == 0), .LINK_EN(1'b1),
+-        .CANNY_EN(EDGE_ALGO == 1)
+-    ) u_alg_full (
+-        .clk(clk_pixel), .rst_n(rst_n_pix),
+-        .in_data(cam_pix_data), .in_valid(cam_pix_valid), .in_de(cam_pix_de),
+-        .in_hs(cam_pix_hs), .in_vs(cam_pix_vs),
+-        .in_x(cam_pix_x), .in_y(cam_pix_y),
+-        .threshold(threshold),
+-        .out_data(edge_full_data), .out_gray(),
+-        .out_valid(edge_full_valid), .out_de(edge_full_de),
+-        .out_hs(edge_full_hs), .out_vs(edge_full_vs),
+-        .out_x(edge_full_x), .out_y(edge_full_y)
+-    );
+-
+-    wire        edge_bit, edge_valid, edge_written;
+-
+-    edge_frame_store #(
+-        .H_ACTIVE(640), .V_ACTIVE(480),
+-        .H_SYNC(96), .H_BACK(48),
+-        .H_BITS(X_BITS), .V_BITS(Y_BITS),
+-        .ALIGN_X_SUB(2), .ALIGN_Y_SUB(3)
+-    ) u_edge_store (
+-        .clk(clk_pixel), .rst_n(rst_n_pix),
+-        .in_bit(edge_full_data[7]), .in_de(edge_full_de), .in_vs(edge_full_vs),
+-        .in_x(edge_full_x), .in_y(edge_full_y),
+-        .disp_de(pix_de), .disp_hcnt(pix_hcnt),
+-        .disp_x(pix_x), .disp_y(pix_y_act),
+-        .out_bit(edge_bit), .out_valid(edge_valid), .written(edge_written)
+-    );
+-
+-    // Align the 1-bit edge readout with the 16-cycle colour/median delay.
+-    reg [15:0] edge_bit_dly;
+-    always @(posedge clk_pixel or negedge rst_n_pix) begin
+-        if (!rst_n_pix) edge_bit_dly <= 16'd0;
+-        else             edge_bit_dly <= {edge_bit_dly[14:0], edge_bit};
+-    end
+-    wire [7:0] edge_data = edge_bit_dly[15] ? 8'hFF : 8'h00;
+-
+-    // Shape recognition removed in this version (no mode 5, no shape hardware).
+-
+-    //--------------------------------------------------------------------------
+-    // Five display modes (24-bit), all streams aligned to raw_de (16 cycles):
+-    //   0 colour original, 1 median grayscale, 2 edge, 3 split (gray|edge),
+-    //   4 colour + red edges.
+-    //--------------------------------------------------------------------------
+-    wire edge_on    = edge_data[7];
+-    wire split_left = (raw_x < 11'd320);
+-
+-    reg [7:0] base_r, base_g, base_b;
+-    always @(*) begin
+-        case (disp_mode)
+-            3'd0: begin
+-                base_r = raw_r; base_g = raw_g; base_b = raw_b;
+-            end
+-            3'd1: begin
+-                if (gray_d_valid) begin
+-                    base_r = gray_d; base_g = gray_d; base_b = gray_d;
+-                end else begin
+-                    base_r = 8'h00; base_g = 8'h00; base_b = 8'h00;
+-                end
+-            end
+-            3'd2: begin
+-                base_r = edge_data; base_g = edge_data; base_b = edge_data;
+-            end
+-            3'd3: begin
+-                if (split_left) begin
+-                    if (gray_d_valid) begin
+-                        base_r = gray_d; base_g = gray_d; base_b = gray_d;
+-                    end else begin
+-                        base_r = 8'h00; base_g = 8'h00; base_b = 8'h00;
+-                    end
+-                end else begin
+-                    base_r = edge_data; base_g = edge_data; base_b = edge_data;
+-                end
+-            end
+-            default: begin      // 3'd4 : red edges over the colour image
+-                base_r = edge_on ? 8'hFF : raw_r;
+-                base_g = edge_on ? 8'h00 : raw_g;
+-                base_b = edge_on ? 8'h00 : raw_b;
+-            end
+-        endcase
+-    end
+-
+-    wire [7:0] disp_r = base_r;
+-    wire [7:0] disp_g = base_g;
+-    wire [7:0] disp_b = base_b;
+-
+-    //--------------------------------------------------------------------------
+-    // Display source fallback : camera image, or color bars when camera absent
+-    //--------------------------------------------------------------------------
+-    wire [7:0] bar_r, bar_g, bar_b;
+-
+-    pattern_gen #(
+-        .ACTIVE_W(640), .ACTIVE_H(480), .X_BITS(X_BITS), .Y_BITS(Y_BITS)
+-    ) u_bar (
+-        .x(raw_x), .y(raw_y), .de(raw_de),
+-        .r(bar_r), .g(bar_g), .b(bar_b)
+-    );
+-
+-    wire [7:0] out_r = cam_alive ? disp_r : bar_r;
+-    wire [7:0] out_g = cam_alive ? disp_g : bar_g;
+-    wire [7:0] out_b = cam_alive ? disp_b : bar_b;
+-
+-    //--------------------------------------------------------------------------
+-    // HDMI TMDS output
+-    //--------------------------------------------------------------------------
+-    rgb2dvi #(
+-        .ENABLE_OSERDES(0)
+-    ) u_rgb2dvi (
+-        .PixelClk    (clk_pixel),
+-        .aRst        (1'b0),
+-        .aRst_n      (1'b1),
+-        .bitflip_i   (4'b0000),
+-        .oe_i        (1'b1),
+-        .vid_pVSync  (raw_vs),
+-        .vid_pHSync  (raw_hs),
+-        .vid_pVDE    (raw_de),
+-        .vid_pData   ({out_r, out_g, out_b}),
+-        .SerialClk   (1'b0),        // unused (OSERDES disabled)
+-        .TMDS_Clk_p  (),
+-        .TMDS_Clk_n  (),
+-        .TMDS_Data_p (),
+-        .TMDS_Data_n (),
+-        .txc_o       (hdmi_txc_o),
+-        .txd0_o      (hdmi_txd0_o),
+-        .txd1_o      (hdmi_txd1_o),
+-        .txd2_o      (hdmi_txd2_o)
+-    );
+-
+-    assign hdmi_txc_oe  = 1'b1;
+-    assign hdmi_txd0_oe = 1'b1;
+-    assign hdmi_txd1_oe = 1'b1;
+-    assign hdmi_txd2_oe = 1'b1;
+-
+-    assign hdmi_txc_rst_o  = ~rst_n_pix;
+-    assign hdmi_txd0_rst_o = ~rst_n_pix;
+-    assign hdmi_txd1_rst_o = ~rst_n_pix;
+-    assign hdmi_txd2_rst_o = ~rst_n_pix;
+-
+-endmodule
++//==============================================================================
++// system_dbg_top : camera-debug build of the system integration
++//                  version dbg_20260927_01  (2026-09-27)
++//
++//   Derivative of rtl/top/system_top.v (kept for reference / rollback).
++//   The datapath is identical, the differences are:
++//
++//     1. all 8 board LEDs (led0..led7) are used as a *fault bank* that says
++//        where the camera data path stopped (see DBG LED BANK below);
++//     2. the I2C master reports a sticky NACK flag (i2c_any_nack);
++//     3. the MIPI LP/HS polarity is selectable with two localparams
++//        (see MIPI POLARITY SWITCHES below);
++//     4. NEW in this version: the csi_rx soft IP gets its own 50 MHz clock
++//        (clk_csi) instead of clk_sys = 24 MHz - see CLOCKING below.
++//
++//   Everything downstream of `csi_valid` is unchanged, so a picture that
++//   works here works in proj/system as well.
++//
++//------------------------------------------------------------------------------
++// ALIGNED WITH THE BOARD VENDOR'S OWN SC2210 DEMO  (2026-09-27)
++//
++//   Reference: VF-Ti60F225_HDK_V2.1_20251009\
++//              07-FPGA_HDL_Image-2023.2\04-1_Ti60_SC2210_HDMI_1080P60
++//   (same board + same sensor; ships a built bitstream, so it is known good)
++//
++//     * MIPI data lanes stay on the vendor's pins - peri.xml:
++//         csi_rxc  = GPIOR_PN_17
++//         csi_rxd0 = GPIOR_PN_18     (NOT PN_15: the xlsx "MIPI_RX0" is a
++//         csi_rxd1 = GPIOR_PN_19      board net name, not the D-PHY
++//         csi_rxd2 = GPIOR_PN_15      block_def order used by the hard block)
++//         csi_rxd3 = GPIOR_PN_16
++//       static delay 17, is_fifo = false  -> same as the vendor demo.
++//     * polarity INV_HS=1 / SWAP_LP=1 = vendor's CSI_RXD_INV = 4'b1111
++//       ("data can be inverted with swapped LP data and flipped HS data").
++//     * the camera initialisation table is the vendor's own
++//       I2C_SC2210_19201080_4Lanes_Config.v, 266 writes, identical.
++//
++//   The vendor's demo does NOT use the Efinix csi2_rx IP - it uses its own
++//   MIPIRx4LaneFre block - so the IP has to be given a sane environment:
++//   both available references run the RX core clock at 96..100 MHz while
++//   this project used to run it at 24 MHz.
++//------------------------------------------------------------------------------
++// CLOCKING  (peri.xml sys_pll, VCO = 3000 MHz)
++//
++//     clk_sys       24.0 MHz   I2C master + housekeeping
++//     clk_pixel     25.0 MHz   video/display pipeline
++//     clk_pixel_10x 250  MHz   HDMI serializer
++//     clk_csi       50.0 MHz   csi_rx soft IP core clock  <-- new here
++//
++//   Reason: ip/csi_rx was generated with CLOCK_FREQ_MHZ = 50 (documented
++//   range 40..100 MHz) but was fed clk_sys = 24 MHz, i.e. below the minimum.
++//   The IP converts its LP timing constants with this number, so feeding a
++//   clock that matches the parameter is the parameter-consistent setting.
++//   If a future experiment shows the IP wants the references' 96..100 MHz,
++//   only the clk_csi out_divider in the peri.xml has to change (60 -> 30).
++//
++//   Domain split: csi_rx uses clk_csi for `clk`/`axi_clk`, csi_rxc_i (the
++//   D-PHY byte clock, ~31 MHz) for `clk_byte_HS`, and clk_pixel for the pixel
++//   side.  Everything downstream is still clk_pixel only.
++//------------------------------------------------------------------------------
++//
++// KEYS
++//   key_up : increase the Sobel threshold (as before).
++//   key_dn : short press cycles the display mode
++//              0 raw -> 1 grayscale -> 2 edge -> 3 split
++//              -> 4 red-edge overlay -> 0 ...
++//            hold 1 s toggles the LED fault/timing panel.
++//   Power-on mode is 3 (the legacy split view).
++//
++// NOTE ON THE CLOCK DOMAINS
++//   csi_rx already contains the byte-clock -> pixel-clock dual-clock FIFO, so
++//   everything downstream of csi_rx lives in clk_pixel.  The only remaining
++//   asynchronous inputs are the two push buttons, which are debounced
++//   directly in clk_pixel.
++//==============================================================================
++module system_dbg_top (
++    input  wire        clk_24m,          // 24 MHz crystal (PLL reference)
++    output wire        sys_pll_rstn_o,   // PLL reset, active low -> drive high
++    input  wire        sys_pll_lock,     // PLL locked
++    input  wire        clk_sys,          // PLL out : 24 MHz system clock
++    input  wire        clk_pixel,        // PLL out : 25.0 MHz pixel clock
++    input  wire        clk_pixel_10x,    // PLL out : 250 MHz serializer clock
++    input  wire        clk_csi,          // PLL out : 50 MHz csi_rx core clock
++
++    //------------------------------------------------------------------
++    // MIPI-CSI I2C
++    //------------------------------------------------------------------
++    output wire        csi_scl_o,
++    output wire        csi_scl_oe,
++    input  wire        csi_scl_i,
++    output wire        csi_sda_o,
++    output wire        csi_sda_oe,
++    input  wire        csi_sda_i,
++
++    //------------------------------------------------------------------
++    // MIPI-CSI RXC (clock lane)
++    //------------------------------------------------------------------
++    input  wire        csi_rxc_lp_p_i,
++    input  wire        csi_rxc_lp_n_i,
++    output wire        csi_rxc_hs_en_o,
++    output wire        csi_rxc_hs_term_en_o,
++    input  wire        csi_rxc_i,        // D-PHY RX byte clock (CLKOUT)
++
++    //------------------------------------------------------------------
++    // MIPI-CSI RXD0
++    //------------------------------------------------------------------
++    output wire        csi_rxd0_rst_o,
++    output wire        csi_rxd0_hs_en_o,
++    output wire        csi_rxd0_hs_term_en_o,
++    input  wire        csi_rxd0_lp_p_i,
++    input  wire        csi_rxd0_lp_n_i,
++    input  wire [7:0]  csi_rxd0_hs_i,
++
++    //------------------------------------------------------------------
++    // MIPI-CSI RXD1
++    //------------------------------------------------------------------
++    output wire        csi_rxd1_rst_o,
++    output wire        csi_rxd1_hs_en_o,
++    output wire        csi_rxd1_hs_term_en_o,
++    input  wire        csi_rxd1_lp_p_i,
++    input  wire        csi_rxd1_lp_n_i,
++    input  wire [7:0]  csi_rxd1_hs_i,
++
++    //------------------------------------------------------------------
++    // MIPI-CSI RXD2
++    //------------------------------------------------------------------
++    output wire        csi_rxd2_rst_o,
++    output wire        csi_rxd2_hs_en_o,
++    output wire        csi_rxd2_hs_term_en_o,
++    input  wire        csi_rxd2_lp_p_i,
++    input  wire        csi_rxd2_lp_n_i,
++    input  wire [7:0]  csi_rxd2_hs_i,
++
++    //------------------------------------------------------------------
++    // MIPI-CSI RXD3
++    //------------------------------------------------------------------
++    output wire        csi_rxd3_rst_o,
++    output wire        csi_rxd3_hs_en_o,
++    output wire        csi_rxd3_hs_term_en_o,
++    input  wire        csi_rxd3_lp_p_i,
++    input  wire        csi_rxd3_lp_n_i,
++    input  wire [7:0]  csi_rxd3_hs_i,
++
++    //------------------------------------------------------------------
++    // HDMI TMDS (10-bit parallel -> on-chip LVDS TX 10:1 serializer)
++    //------------------------------------------------------------------
++    output wire [9:0]  hdmi_txc_o,
++    output wire [9:0]  hdmi_txd0_o,
++    output wire [9:0]  hdmi_txd1_o,
++    output wire [9:0]  hdmi_txd2_o,
++    output wire        hdmi_txc_oe,
++    output wire        hdmi_txd0_oe,
++    output wire        hdmi_txd1_oe,
++    output wire        hdmi_txd2_oe,
++    output wire        hdmi_txc_rst_o,
++    output wire        hdmi_txd0_rst_o,
++    output wire        hdmi_txd1_rst_o,
++    output wire        hdmi_txd2_rst_o,
++
++    //------------------------------------------------------------------
++    // User IO : 2 keys + the 8 board LEDs
++    //------------------------------------------------------------------
++    input  wire        key_up,
++    input  wire        key_dn,
++    output wire [7:0]  led            // LED0..LED7, ACTIVE LOW (0 = lit)
++);
++
++    //--------------------------------------------------------------------------
++    // Latency of the algorithm branch.
++    //--------------------------------------------------------------------------
++    localparam ALG_LATENCY = 12;
++    localparam X_BITS      = 11;
++    localparam Y_BITS      = 11;
++
++    //--------------------------------------------------------------------------
++    // Full-resolution edge algorithm selector.
++    //   0 = original Sobel + NMS + local hysteresis (baseline, LATENCY 14)
++    //   1 = Canny : Gaussian -> Sobel -> NMS -> hysteresis -> linking (LATENCY 13)
++    // Rebuild with EDGE_ALGO=0 to fall back to the baseline bitstream for an
++    // on-the-bench A/B comparison.
++    //--------------------------------------------------------------------------
++    localparam EDGE_ALGO        = 1;
++    localparam EDGE_PREMEDIAN   = 1;
++    localparam EDGE_GAUSS3      = 0;
++    localparam EDGE_SCHARR      = 0;
++    localparam EDGE_INTERP_NMS  = 0;
++    localparam EDGE_ALIGN_X     = 3;
++    localparam EDGE_ALIGN_Y     = 4;
++    localparam ALG_LATENCY_FULL = (EDGE_ALGO == 1)
++                                ? (13 + (EDGE_PREMEDIAN ? 4 : 0) + (EDGE_GAUSS3 ? 2 : 0))
++                                : 14;
++
++    //--------------------------------------------------------------------------
++    // MIPI POLARITY SWITCHES  (Debug.md 4.2 - "suspect #1")
++    //
++    //   The vendor example and rtl/camera/camera_top.v pass LP_P->LP_P,
++    //   LP_N->LP_N and the HS bytes un-inverted.  The old system_top.v passed
++    //   them swapped / inverted *without a comment*.  Both variants are
++    //   available here; only one can be right for this board.
++    //
++    //   Sweep order (change one letter, rebuild, watch LED3 + LED6):
++    //     INV_HS=1, SWAP_LP=1   <- default, identical to the old system_top.v
++    //     INV_HS=0, SWAP_LP=0   <- identical to the vendor example
++    //     INV_HS=1, SWAP_LP=0
++    //     INV_HS=0, SWAP_LP=1
++    //--------------------------------------------------------------------------
++    localparam INV_HS  = 1'b1;   // 1 = invert the received HS byte
++    localparam SWAP_LP = 1'b1;   // 1 = swap LP P/N
++
++    wire [7:0] hs0 = INV_HS ? (csi_rxd0_hs_i ^ 8'hff) : csi_rxd0_hs_i;
++    wire [7:0] hs1 = INV_HS ? (csi_rxd1_hs_i ^ 8'hff) : csi_rxd1_hs_i;
++    wire [7:0] hs2 = INV_HS ? (csi_rxd2_hs_i ^ 8'hff) : csi_rxd2_hs_i;
++    wire [7:0] hs3 = INV_HS ? (csi_rxd3_hs_i ^ 8'hff) : csi_rxd3_hs_i;
++
++    wire [3:0] lp_p = SWAP_LP ? {csi_rxd3_lp_n_i, csi_rxd2_lp_n_i,
++                                 csi_rxd1_lp_n_i, csi_rxd0_lp_n_i}
++                              : {csi_rxd3_lp_p_i, csi_rxd2_lp_p_i,
++                                 csi_rxd1_lp_p_i, csi_rxd0_lp_p_i};
++    wire [3:0] lp_n = SWAP_LP ? {csi_rxd3_lp_p_i, csi_rxd2_lp_p_i,
++                                 csi_rxd1_lp_p_i, csi_rxd0_lp_p_i}
++                              : {csi_rxd3_lp_n_i, csi_rxd2_lp_n_i,
++                                 csi_rxd1_lp_n_i, csi_rxd0_lp_n_i};
++
++    //--------------------------------------------------------------------------
++    // Reset
++    //--------------------------------------------------------------------------
++    assign sys_pll_rstn_o = 1'b1;
++
++    reg rst_n_pix;
++    always @(posedge clk_pixel or negedge sys_pll_lock) begin
++        if (!sys_pll_lock) rst_n_pix <= 1'b0;
++        else               rst_n_pix <= 1'b1;
++    end
++
++    wire rst_n_sys = sys_pll_lock;
++
++    //--------------------------------------------------------------------------
++    // I2C : SC2210 register LUT + master  (265 entries -> 9-bit index)
++    //--------------------------------------------------------------------------
++    wire [8:0]  i2c_index;
++    wire [23:0] i2c_lut;
++    wire [8:0]  i2c_size;
++    wire        i2c_done;
++    wire        i2c_nack;
++
++    // dbg_20260928_01: local 640x480 (VGA60) table - the sensor now outputs the
++    // 640x480 centre crop directly at 59.52 Hz / 31.25 kHz lines, so the display
++    // can show it 1:1 (see the file header for the register derivation).
++    I2C_SC2210_640x480_4Lanes_Config u_sc2210_cfg (
++        .LUT_INDEX(i2c_index),
++        .LUT_DATA (i2c_lut),
++        .LUT_SIZE (i2c_size)
++    );
++
++    i2c_timing_ctrl_16bit #(
++        .CLK_FREQ(24_000000),
++        .I2C_FREQ(400_000),
++        .IDX_W   (9)
++    ) u_i2c (
++        .clk             (clk_sys),
++        .rst_n           (rst_n_sys),
++        .i2c_sclk        (csi_scl_o),
++        .i2c_sdat_IN     (csi_sda_i),
++        .i2c_sdat_OUT    (csi_sda_o),
++        .i2c_sdat_OE     (csi_sda_oe),
++        .i2c_config_size (i2c_size),
++        .i2c_config_index(i2c_index),
++        .i2c_config_data ({8'h60, i2c_lut}),
++        .i2c_config_done (i2c_done),
++        .i2c_any_nack    (i2c_nack),
++        .i2c_rdata       ()
++    );
++    assign csi_scl_oe = 1'b1;          // SCL is always driven by the master
++
++    //--------------------------------------------------------------------------
++    // csi_rx soft IP (AXI tied off)
++    //--------------------------------------------------------------------------
++    wire        rxd0_fifo_rd, rxd1_fifo_rd, rxd2_fifo_rd, rxd3_fifo_rd;
++    wire        rxd0_fifo_empty = 1'b0;
++    wire        rxd1_fifo_empty = 1'b0;
++    wire        rxd2_fifo_empty = 1'b0;
++    wire        rxd3_fifo_empty = 1'b0;
++
++    wire        csi_valid;
++    wire [63:0] csi_data;
++    wire        csi_hsync;
++    wire        csi_vsync;
++    wire [15:0] csi_word_count;
++    wire [5:0]  csi_datatype;
++    wire        csi_irq;
++
++    csi_rx u_csi_rx (
++        .reset_n         (rst_n_sys),
++        .clk             (clk_csi),        // 50 MHz (was clk_sys = 24 MHz)
++        .reset_byte_HS_n (rst_n_sys),
++        .clk_byte_HS     (csi_rxc_i),
++        .reset_pixel_n   (rst_n_pix),
++        .clk_pixel       (clk_pixel),
++
++        .Rx_LP_CLK_P     (csi_rxc_lp_p_i),
++        .Rx_LP_CLK_N     (csi_rxc_lp_n_i),
++        .Rx_HS_enable_C  (csi_rxc_hs_en_o),
++        .LVDS_termen_C   (csi_rxc_hs_term_en_o),
++
++        .Rx_LP_D_P       (lp_p),
++        .Rx_LP_D_N       (lp_n),
++        .Rx_HS_D_0       (hs0),
++        .Rx_HS_D_1       (hs1),
++        .Rx_HS_D_2       (hs2),
++        .Rx_HS_D_3       (hs3),
++        .Rx_HS_D_4       (8'h00),
++        .Rx_HS_D_5       (8'h00),
++        .Rx_HS_D_6       (8'h00),
++        .Rx_HS_D_7       (8'h00),
++        .Rx_HS_enable_D  ({csi_rxd3_hs_en_o, csi_rxd2_hs_en_o,
++                           csi_rxd1_hs_en_o, csi_rxd0_hs_en_o}),
++        .LVDS_termen_D   ({csi_rxd3_hs_term_en_o, csi_rxd2_hs_term_en_o,
++                           csi_rxd1_hs_term_en_o, csi_rxd0_hs_term_en_o}),
++        .fifo_rd_enable  ({rxd3_fifo_rd, rxd2_fifo_rd,
++                           rxd1_fifo_rd, rxd0_fifo_rd}),
++        .fifo_rd_empty   ({rxd3_fifo_empty, rxd2_fifo_empty,
++                           rxd1_fifo_empty, rxd0_fifo_empty}),
++        .DLY_enable_D    (),
++        .DLY_inc_D       (),
++        .u_dly_enable_D  (4'b0000),
++        .u_dly_inc_D     (4'b0000),
++
++        .axi_clk         (clk_csi),
++        .axi_reset_n     (rst_n_sys),
++        .axi_awaddr      (6'b0),
++        .axi_awvalid     (1'b0),
++        .axi_awready     (),
++        .axi_wdata       (32'b0),
++        .axi_wvalid      (1'b0),
++        .axi_wready      (),
++        .axi_bvalid      (),
++        .axi_bready      (1'b0),
++        .axi_araddr      (6'b0),
++        .axi_arvalid     (1'b0),
++        .axi_arready     (),
++        .axi_rdata       (),
++        .axi_rvalid      (),
++        .axi_rready      (1'b1),
++
++        .vsync_vc0       (csi_vsync),
++        .vsync_vc1       (), .vsync_vc2(), .vsync_vc3(),
++        .vsync_vc4       (), .vsync_vc5(), .vsync_vc6(), .vsync_vc7(),
++        .vsync_vc8       (), .vsync_vc9(), .vsync_vc10(), .vsync_vc11(),
++        .vsync_vc12      (), .vsync_vc13(), .vsync_vc14(), .vsync_vc15(),
++        .hsync_vc0       (csi_hsync),
++        .hsync_vc1       (), .hsync_vc2(), .hsync_vc3(),
++        .hsync_vc4       (), .hsync_vc5(), .hsync_vc6(), .hsync_vc7(),
++        .hsync_vc8       (), .hsync_vc9(), .hsync_vc10(), .hsync_vc11(),
++        .hsync_vc12      (), .hsync_vc13(), .hsync_vc14(), .hsync_vc15(),
++        .vc              (),
++        .vcx             (),
++        .word_count      (csi_word_count),
++        .shortpkt_data_field(),
++        .datatype        (csi_datatype),
++        .pixel_per_clk   (),
++        .pixel_data      (csi_data),
++        .pixel_data_valid(csi_valid),
++        .irq             (csi_irq)
++    );
++
++    assign csi_rxd0_rst_o = ~rst_n_sys;
++    assign csi_rxd1_rst_o = ~rst_n_sys;
++    assign csi_rxd2_rst_o = ~rst_n_sys;
++    assign csi_rxd3_rst_o = ~rst_n_sys;
++
++    //--------------------------------------------------------------------------
++    // CSI packed stream -> frozen 640x480 pixel stream
++    //--------------------------------------------------------------------------
++    wire [7:0]  pix_r, pix_g, pix_b;
++    wire        pix_valid, pix_de, pix_hsync, pix_vsync;
++    wire [10:0] pix_x, pix_y, pix_hcnt, pix_y_act;
++    wire        line_late, capture_ovf;
++
++    //--------------------------------------------------------------------------
++    // dbg_20261012_03 : FRAME BUFFER instead of the 1-line ping-pong buffer.
++    //   A 320x240x8b frame (76.8 kB in block RAM) is filled from the camera and
++    //   read out by the display's own free-running 640x480@59.5 Hz timing, so
++    //   the picture position no longer depends on the camera's VTS/frame rate
++    //   at all - that is what finally removes the rolling (the sensor turned
++    //   out to be stuck at ~1112-line frames, i.e. ~28 fps, and refuses to be
++    //   programmed to 60 fps).
++    //   Same output interface as video_source, so everything downstream is
++    //   unchanged.  line_late / capture_ovf are tied low inside the module.
++    //--------------------------------------------------------------------------
++    wire        store_written;      // 1 = the frame buffer has been filled at least once
++
++    // The colour preview store is instantiated after camera_line_unpack (it
++    // needs the full-resolution pixel stream for debayering).
++
++    //--------------------------------------------------------------------------
++    // Full-resolution camera pixel stream (64-bit CSI beats -> 1 pixel/clk)
++    //--------------------------------------------------------------------------
++    wire [7:0]  cam_pix_data;
++    wire        cam_pix_valid, cam_pix_de, cam_pix_hs, cam_pix_vs;
++    wire [10:0] cam_pix_x, cam_pix_y;
++
++    camera_line_unpack u_cam_unpack (
++        .clk(clk_pixel), .rst_n(rst_n_pix),
++        .in_valid(csi_valid), .in_hs(csi_hsync), .in_vs(csi_vsync),
++        .in_data(csi_data),
++        .out_data(cam_pix_data), .out_valid(cam_pix_valid),
++        .out_de(cam_pix_de), .out_hs(cam_pix_hs), .out_vs(cam_pix_vs),
++        .out_x(cam_pix_x), .out_y(cam_pix_y)
++    );
++
++    //--------------------------------------------------------------------------
++    // Colour preview: full-res RAW -> 3x3 window -> debayer -> RGB332 store.
++    // The store has the same 320x240x8b footprint as the old RAW preview, so
++    // mode 0 becomes a colour image without spending extra memory blocks.
++    //--------------------------------------------------------------------------
++    wire [7:0] cb00, cb01, cb02, cb10, cb11, cb12, cb20, cb21, cb22;
++    wire       cb_valid;
++    wire [15:0] cb_x, cb_y;
++
++    line_buffer_3x3 #(.WIDTH(640), .DW(8)) u_cam_lb (
++        .clk(clk_pixel), .rst_n(rst_n_pix),
++        .din(cam_pix_data), .din_valid(cam_pix_valid), .din_vsync(~cam_pix_vs),
++        .w00(cb00), .w01(cb01), .w02(cb02),
++        .w10(cb10), .w11(cb11), .w12(cb12),
++        .w20(cb20), .w21(cb21), .w22(cb22),
++        .dout_valid(cb_valid), .dout_x(cb_x), .dout_y(cb_y)
++    );
++
++    wire [7:0] cam_r, cam_g, cam_b;
++    wire       cam_rgb_valid;
++    debayer u_cam_db (
++        .clk(clk_pixel), .rst_n(rst_n_pix),
++        .w00(cb00), .w01(cb01), .w02(cb02),
++        .w10(cb10), .w11(cb11), .w12(cb12),
++        .w20(cb20), .w21(cb21), .w22(cb22),
++        .in_valid(cb_valid), .in_x(cb_x), .in_y(cb_y),
++        .r(cam_r), .g(cam_g), .b(cam_b), .out_valid(cam_rgb_valid)
++    );
++
++    // line / frame activity aligned with the debayer output (lb 1 + debayer 1)
++    reg [1:0] cam_hs_d, cam_vs_d;
++    always @(posedge clk_pixel or negedge rst_n_pix) begin
++        if (!rst_n_pix) begin
++            cam_hs_d <= 2'd0;
++            cam_vs_d <= 2'd0;
++        end else begin
++            cam_hs_d <= {cam_hs_d[0], cam_pix_hs};
++            cam_vs_d <= {cam_vs_d[0], cam_pix_vs};
++        end
++    end
++
++    // White balance for the colour preview.  Tuned from on-board feedback:
++    // no WB -> green, R/B 1.5x -> slightly red.  New balance: R x1.25 and
++    // B x1.625 (G unchanged), which also reduces R-channel highlight clipping.
++    // The two gains are the tuning knobs: change the shifts here if needed.
++    wire [8:0] cam_r_wb9 = {1'b0, cam_r} + {2'b00, cam_r[7:2]};                    // 1.25x
++    wire [8:0] cam_b_wb9 = {1'b0, cam_b} + {2'b00, cam_b[7:1]} + {4'b0000, cam_b[7:3]}; // 1.625x
++    wire [7:0] cam_r_wb  = cam_r_wb9[8] ? 8'hFF : cam_r_wb9[7:0];
++    wire [7:0] cam_b_wb  = cam_b_wb9[8] ? 8'hFF : cam_b_wb9[7:0];
++
++    rgb565_preview_store #(
++        .H_ACTIVE(640), .H_FRONT(16), .H_SYNC(96), .H_BACK(48),
++        .V_ACTIVE(480), .V_FRONT(10), .V_SYNC(2), .V_BACK(33),
++        .BILINEAR_H(0), .SAT_EN(0)
++    ) u_color_store (
++        .clk(clk_pixel), .rst_n(rst_n_pix),
++        .in_r(cam_r_wb), .in_g(cam_g), .in_b(cam_b_wb), .in_valid(cam_rgb_valid),
++        .in_line_act(cam_hs_d[1]), .in_frame_act(cam_vs_d[1]),
++        .pix_r(pix_r), .pix_g(pix_g), .pix_b(pix_b),
++        .pix_valid(pix_valid), .pix_de(pix_de),
++        .pix_hsync(pix_hsync), .pix_vsync(pix_vsync),
++        .pix_x(pix_x), .pix_hcnt(pix_hcnt), .pix_y(pix_y),
++        .pix_y_act(pix_y_act),
++        .line_late(line_late), .capture_ovf(capture_ovf),
++        .buf_written(store_written)
++    );
++
++    //==========================================================================
++    // DEBUG LED BANK  (camera data validity)
++    //
++    //   All 8 board LEDs are driven by rtl/dbg/dbg_led_bank.v, which owns the
++    //   camera-alive detector, the sticky "have I ever seen it" flags and the
++    //   LED polarity.  Read the table at the top of that file - the one line
++    //   version is:
++    //
++    //         所有 LED 全灭  =  相机数据正在流动（数据通路是通的）
++    //         哪一盏亮      =  卡在哪一级（LED0..LED7 = PLL/I2C/CSI/…）
++    //
++    //   cam_alive also selects the display source (camera image vs color bars).
++    //
++    //   NOTE: the fault flags are split by clock domain.  The clk_pixel logic
++    //   analyzer may only sample dbg_fault_pix / dbg_sticky; probing the I2C /
++    //   PLL flags from it costs a clk_sys -> clk_pixel setup path (~1.1 ns,
++    //   measured) - those live in dbg_fault_ctrl and are probed by a second LA
++    //   core clocked by clk_sys (see dbg_core.selection.json).
++    //==========================================================================
++    wire        cam_alive;
++    wire [4:0]  dbg_fault_pix;
++    wire [2:0]  dbg_fault_ctrl;
++    wire [4:0]  dbg_sticky;
++    wire [7:0]  led_ladder;     // fault-ladder pattern from dbg_led_bank
++
++    dbg_led_bank #(
++        .CAM_ALIVE_TIMEOUT(21'd1_000_000)          // ~40 ms @25.0 MHz
++    ) u_dbg_leds (
++        .clk           (clk_pixel),
++        .rst_n         (rst_n_pix),
++        .csi_valid     (csi_valid),
++        .csi_hsync     (csi_hsync),
++        .csi_vsync     (csi_vsync),
++        .csi_datatype  (csi_datatype),
++        .pix_valid     (pix_valid),
++        .capture_ovf   (capture_ovf),
++        .sys_pll_lock  (sys_pll_lock),
++        .i2c_done      (i2c_done),
++        .i2c_nack      (i2c_nack),
++        .cam_alive     (cam_alive),
++        .led           (led_ladder),        // dbg_20261009_01: panel mux below
++        .dbg_fault_pix (dbg_fault_pix),
++        .dbg_fault_ctrl(dbg_fault_ctrl),
++        .dbg_sticky    (dbg_sticky)
++    );
++
++    //==========================================================================
++    // DIAGNOSTIC TIMING COUNTERS  (new in dbg_20260929_01)
++    //
++    //   Three numbers that settle whether the sensor accepted the geometry
++    //   (HTS/VTS) writes in I2C_SC2210_640x480_4Lanes_Config.v.  Read them with
++    //   the Efinity Debugger (they are probes la0_probe13..15), no trigger
++    //   needed - just Run Immediate and read the values:
++    //
++    //     dbg_t_hsync        clk_pixel cycles (40 ns) since the last hsync edge
++    //                          ~800  (32.0 us) -> HTS took effect (31.25 kHz)
++    //                          ~539  (21.6 us) -> HTS did NOT take effect (66.7 kHz, 1080p value)
++    //                          other           -> neither: sensor ignored both writes
++    //     dbg_lines_vsync    hsync pulses since the last vsync edge
++    //                          525  -> VTS took effect (59.5 Hz frame)
++    //                          1112 -> VTS did NOT take effect (1080p value)
++    //     dbg_t_vsync        clk_pixel cycles since the last vsync edge
++    //                          line_period * lines_vsync (consistency check,
++    //                          and it gives the real frame rate directly)
++    //
++    //   Rule of thumb: for a picture that does not slide we need
++    //   dbg_t_hsync == 800 and dbg_lines_vsync == 525.
++    //==========================================================================
++    reg  [19:0] dbg_t_vsync;      // up to 41.9 ms @25 MHz
++    reg  [15:0] dbg_t_hsync;      // up to 2.6 ms
++    reg  [12:0] dbg_lines_vsync;  // up to 8191 lines
++    reg         csi_vsync_1p, csi_hsync_1p;
++
++    // values latched at the sync edges -> stable, usable for the LED panel
++    reg  [15:0] dbg_line_period_lat;   // previous line period  [clk_pixel]
++    reg  [12:0] dbg_lines_frame_lat;   // previous frame length [lines]
++    reg  [19:0] dbg_frame_period_lat;  // previous frame period [clk_pixel]
++
++    always @(posedge clk_pixel or negedge rst_n_pix) begin
++        if (!rst_n_pix) begin
++            dbg_t_vsync     <= 20'd0;
++            dbg_t_hsync     <= 16'd0;
++            dbg_lines_vsync <= 13'd0;
++            csi_vsync_1p    <= 1'b0;
++            csi_hsync_1p    <= 1'b0;
++            dbg_line_period_lat  <= 16'd0;
++            dbg_lines_frame_lat  <= 13'd0;
++            dbg_frame_period_lat <= 20'd0;
++        end else begin
++            csi_vsync_1p <= csi_vsync;
++            csi_hsync_1p <= csi_hsync;
++
++            // vertical sync edge : start a new frame, latch the finished one
++            if (csi_vsync & ~csi_vsync_1p) begin
++                dbg_frame_period_lat <= (dbg_t_vsync == 20'd0) ? dbg_frame_period_lat
++                                                               : dbg_t_vsync;
++                dbg_lines_frame_lat  <= (dbg_lines_vsync == 13'd0) ? dbg_lines_frame_lat
++                                                                   : dbg_lines_vsync;
++                dbg_t_vsync     <= 20'd0;
++                dbg_lines_vsync <= 13'd0;
++            end else if (dbg_t_vsync != 20'hFFFFF) begin
++                dbg_t_vsync     <= dbg_t_vsync + 1'b1;
++            end
++
++            // horizontal sync edge : one more line
++            if (csi_hsync & ~csi_hsync_1p) begin
++                if (dbg_t_hsync != 16'd0) dbg_line_period_lat <= dbg_t_hsync;
++                dbg_t_hsync     <= 16'd0;
++                dbg_lines_vsync <= (csi_vsync & ~csi_vsync_1p) ? 13'd1
++                                                               : (dbg_lines_vsync + 1'b1);
++            end else if (dbg_t_hsync != 16'hFFFF) begin
++                dbg_t_hsync     <= dbg_t_hsync + 1'b1;
++            end
++        end
++    end
++
++    //--------------------------------------------------------------------------
++    // vsync sanity flag  (new in dbg_20261012_01)
++    //   The first genlock build reacted to EVERY csi_vsync rising edge.  If the
++    //   camera's vsync carries extra pulses (or is much faster than a frame),
++    //   that restarts the display frame constantly and the monitor loses sync -
++    //   which is exactly the "all LEDs dark + black screen" we saw.
++    //   Here any two rising edges closer than 2 ms set a sticky flag, and the
++    //   flag is refreshed every ~1.34 s, so the LED shows "recently" rather
++    //   than "ever".  The genlock itself only accepts edges that are at least
++    //   one full frame apart (see vga_timing V_MINCNT).
++    //--------------------------------------------------------------------------
++    localparam [19:0] VSYNC_MIN_INT = 20'd50000;    // 2 ms @ 25 MHz
++
++    reg        dbg_vsync_bad;        // 1 = two vsync edges were < 2 ms apart
++    reg [24:0] dbg_vsync_bad_clr;    // refresh window, ~1.34 s
++
++    always @(posedge clk_pixel or negedge rst_n_pix) begin
++        if (!rst_n_pix) begin
++            dbg_vsync_bad     <= 1'b0;
++            dbg_vsync_bad_clr <= 25'd0;
++        end else begin
++            dbg_vsync_bad_clr <= dbg_vsync_bad_clr + 1'b1;
++            if (dbg_vsync_bad_clr == 25'd0) dbg_vsync_bad <= 1'b0;
++            if ((csi_vsync & ~csi_vsync_1p) && (dbg_t_vsync < VSYNC_MIN_INT))
++                dbg_vsync_bad <= 1'b1;
++        end
++    end
++
++
++    //--------------------------------------------------------------------------
++    // Keys (debounced in the pixel domain)
++    //
++    //   key_up : Sobel threshold up (unchanged)
++    //   key_dn : short press -> cycle display mode
++    //            hold 1 s    -> toggle the LED fault/timing panel
++    //--------------------------------------------------------------------------
++    localparam CNT_20MS_25M = 500_000;   // 20 ms at 25.0 MHz
++
++    wire key_up_p;
++    wire key_dn_level, key_dn_press, key_dn_release;
++
++    key_debounce #(.CNT_W(20), .CNT_MAX(CNT_20MS_25M), .PRESS_LOW(1'b1)) u_db_up (
++        .clk(clk_pixel), .rst_n(rst_n_pix), .key_in(key_up),
++        .key_out(), .press(key_up_p), .released()
++    );
++
++    key_debounce #(.CNT_W(20), .CNT_MAX(CNT_20MS_25M), .PRESS_LOW(1'b1)) u_db_dn (
++        .clk(clk_pixel), .rst_n(rst_n_pix), .key_in(key_dn),
++        .key_out(key_dn_level), .press(key_dn_press), .released(key_dn_release)
++    );
++
++    wire [7:0] threshold;
++    // INIT was 64 for the plain Sobel path.  The Canny path smooths the image
++    // with a 5x5 Gaussian first, which lowers the gradient magnitudes, so the
++    // high threshold starts lower (32); the low threshold is threshold>>1.
++    // key_up still raises it in +4 steps (saturating at 255).
++    threshold_reg #(.W(8), .INIT(8'd32), .STEP(8'd4)) u_thr (
++        .clk(clk_pixel), .rst_n(rst_n_pix),
++        .key_up(key_up_p), .key_down(1'b0),
++        .threshold(threshold)
++    );
++
++    // Display mode:
++    //   0 = raw camera stream
++    //   1 = median-filtered grayscale
++    //   2 = binary edge map
++    //   3 = legacy split view (raw | edge)
++    //   4 = red edge overlay on the original image (PDF high-level challenge)
++    // Power-on default is 3 so the first picture matches the previous build.
++    reg [2:0] disp_mode;
++
++    // 1 s at 25 MHz.  A short press cycles disp_mode on release; a long hold
++    // toggles the LED panel and does NOT also change the display mode.
++    localparam [24:0] DN_LONG_CNT = 25'd25_000_000;
++    reg [24:0] dn_hold_cnt;
++    reg        dn_long_done;
++    reg        led_mode;      // 0 = fault ladder, 1 = timing dial
++
++    always @(posedge clk_pixel or negedge rst_n_pix) begin
++        if (!rst_n_pix) begin
++            disp_mode   <= 3'd3;
++            dn_hold_cnt <= 25'd0;
++            dn_long_done <= 1'b0;
++            led_mode    <= 1'b0;
++        end else begin
++            if (key_dn_press) begin
++                dn_hold_cnt  <= 25'd0;
++                dn_long_done <= 1'b0;
++            end else if (key_dn_level && !dn_long_done) begin
++                if (dn_hold_cnt >= DN_LONG_CNT - 1'b1) begin
++                    dn_long_done <= 1'b1;
++                    led_mode     <= ~led_mode;
++                end else begin
++                    dn_hold_cnt <= dn_hold_cnt + 1'b1;
++                end
++            end
++
++            if (key_dn_release) begin
++                // 6 modes (0..5), wrap 5 -> 0
++                if (!dn_long_done) disp_mode <= (disp_mode == 3'd4)
++                                              ? 3'd0 : disp_mode + 3'd1;
++                dn_hold_cnt  <= 25'd0;
++                dn_long_done <= 1'b0;
++            end
++        end
++    end
++
++    //==========================================================================
++    // LED PANEL with isolation-build measurement probe
++    //
++    //   Two instruments share the 8 LEDs; hold key_dn for 1 s to switch:
++    //
++    //     mode 0 (power-on default) : the camera fault ladder, exactly as
++    //                                 before (all LEDs dark = data flowing)
++    //     mode 1                    : the CAMERA TIMING DIAL - the numbers we
++    //                                 have to watch to make the picture stop
++    //                                 rolling.  A lit LED means "yes" for its
++    //                                 row; the target combinations are marked.
++    //
++    //   DIAL (mode 1)                          lit means
++    //   LED0  line period < 760 clk  ( <33 kHz)  line rate too FAST
++    //   LED1  line period 760..840   (~31.25 kHz) LINE RATE OK  <-- target
++    //   LED2  line period > 840 clk  ( <30 kHz)  line rate too SLOW
++    //   LED3  at least one complete frame period has been captured
++    //   LED4  no complete frame period captured yet
++    //   LED5  MEASUREMENT PROBE: active-low 4-clock pulse on each vsync
++    //         rising edge. At 25 MHz the low pulse is 160 ns. Probe LED5 /
++    //         GPIO P13; this output is independent of the LED panel mode.
++    //   LED6  vsync edges < 2 ms apart (sticky)  csi_vsync carries extra pulses
++    //   LED7  cam_alive & store_written          camera flowing AND the frame
++    //                                            buffer has been filled at least
++    //                                            once (dbg_20261012_03: capture_ovf
++    //                                            no longer exists, so this row now
++    //                                            watches the frame store instead)
++    //
++    //   The old "fps_ok 370k..470k" and "vts_ok 483..567 lines" claims were
++    //   removed because they contradicted the recorded ~28 fps / 1112-line
++    //   camera behavior. They were debug hypotheses, not measurement evidence.
++    //   LED5 now provides a calibrated pulse suitable for external counting.
++    //==========================================================================
++    wire line_fast = (dbg_line_period_lat != 16'd0) && (dbg_line_period_lat < 16'd760);
++    wire line_ok   = (dbg_line_period_lat >= 16'd760) && (dbg_line_period_lat <= 16'd840);
++    wire line_slow = (dbg_line_period_lat >  16'd840);
++
++    wire        measure_frame_tick;
++    wire        measure_lines_pulse;
++    wire [19:0] measure_frame_period;
++    wire [12:0] measure_frame_lines;
++    wire        measure_sample_valid;
++
++    measurement_timing #(.PULSE_CYCLES(4)) u_measure (
++        .clk(clk_pixel), .rst_n(rst_n_pix),
++        .csi_vsync(csi_vsync), .csi_hsync(csi_hsync),
++        .frame_tick_o(measure_frame_tick),
++        .lines_pulse_o(measure_lines_pulse),
++        .frame_period_o(measure_frame_period),
++        .lines_frame_o(measure_frame_lines),
++        .sample_valid_o(measure_sample_valid)
++    );
++
++    wire [7:0] led_dial = {                   // 1 = this LED is lit
++        (cam_alive & store_written),          // LED7 : data flowing + buffer filled
++        dbg_vsync_bad,                        // LED6 : csi_vsync has extra pulses
++        measure_frame_tick,                   // LED5 : measurement pulse
++        ~measure_sample_valid,                // LED4 : no complete period yet
++        measure_sample_valid,                 // LED3 : complete period captured
++        line_slow,                            // LED2 : line rate too slow
++        line_ok,                              // LED1 : line rate ~31.25 kHz ok
++        line_fast                             // LED0 : line rate too fast
++    };
++
++    // LEDs are active-low. LED5 gives a 160 ns frame-start pulse. LED3 gives a
++    // low pulse whose width equals lines/frame * 40 ns. Both override the
++    // normal panel for the duration of the pulse, without entering video logic.
++    wire [7:0] led_panel = led_mode ? ~led_dial : led_ladder;
++    wire [7:0] measure_override =
++        (measure_frame_tick ? 8'b0010_0000 : 8'b0000_0000) |
++        (measure_lines_pulse ? 8'b0000_1000 : 8'b0000_0000);
++    assign led = led_panel & ~measure_override;
++
++    //--------------------------------------------------------------------------
++    // Colour preview delay: 16 cycles = 12 (edge alignment) + 4 (median)
++    //--------------------------------------------------------------------------
++    wire [7:0]  raw_r, raw_g, raw_b;
++    wire        raw_valid, raw_de, raw_hs, raw_vs;
++    wire [10:0] raw_x, raw_y;
++
++    rgb_video_delay #(
++        .STAGES(16), .X_BITS(X_BITS), .Y_BITS(Y_BITS)
++    ) u_rgb_delay (
++        .clk(clk_pixel), .rst_n(rst_n_pix),
++        .in_r(pix_r), .in_g(pix_g), .in_b(pix_b),
++        .in_valid(pix_valid), .in_de(pix_de),
++        .in_hs(pix_hsync), .in_vs(pix_vsync),
++        .in_x(pix_x), .in_y(pix_y),
++        .out_r(raw_r), .out_g(raw_g), .out_b(raw_b),
++        .out_valid(raw_valid), .out_de(raw_de),
++        .out_hs(raw_hs), .out_vs(raw_vs),
++        .out_x(raw_x), .out_y(raw_y)
++    );
++
++    //--------------------------------------------------------------------------
++    // Median-filtered grayscale preview (mode 1) from the colour luma.
++    //   luma at pix timing -> 3x3 median (4 cycles) -> 12-cycle delay = 16,
++    //   aligned with raw_r/g/b and edge_data.
++    //--------------------------------------------------------------------------
++    // 16-bit products: 8-bit constants here would truncate each product to
++    // 8 bits and then the >>8 would make the whole luma zero (black mode 1).
++    wire [15:0] pix_luma_sum = 16'd77 * pix_r + 16'd150 * pix_g + 16'd29 * pix_b;
++    wire [7:0]  pix_luma     = pix_luma_sum[15:8];
++    // Debug-core compatibility: la0 still samples the old "pix_data" probe.
++    // Keep an 8-bit alias (the colour luma) at the top level.
++    wire [7:0] pix_data = pix_luma;
++    wire [7:0] gm00, gm01, gm02, gm10, gm11, gm12, gm20, gm21, gm22;
++    wire       gm_wvalid;
++    wire [15:0] gm_wx, gm_wy;
++
++    line_buffer_3x3 #(.WIDTH(640), .DW(8)) u_gray_lb (
++        .clk(clk_pixel), .rst_n(rst_n_pix),
++        .din(pix_luma), .din_valid(pix_de), .din_vsync(~pix_vsync),
++        .w00(gm00), .w01(gm01), .w02(gm02),
++        .w10(gm10), .w11(gm11), .w12(gm12),
++        .w20(gm20), .w21(gm21), .w22(gm22),
++        .dout_valid(gm_wvalid), .dout_x(gm_wx), .dout_y(gm_wy)
++    );
++
++    wire [7:0] gray_med, gray_adapt;
++    wire       gray_valid;
++    median3x3 u_gray_med (
++        .clk(clk_pixel), .rst_n(rst_n_pix),
++        .w00(gm00), .w01(gm01), .w02(gm02),
++        .w10(gm10), .w11(gm11), .w12(gm12),
++        .w20(gm20), .w21(gm21), .w22(gm22),
++        .in_valid(gm_wvalid), .med(gray_med), .med_adaptive(gray_adapt),
++        .out_valid(gray_valid)
++    );
++
++    wire [7:0]  gray_d;
++    wire        gray_d_valid, gray_d_de, gray_d_hs, gray_d_vs;
++    wire [10:0] gray_d_x, gray_d_y;
++    video_delay #(
++        .STAGES(12), .X_BITS(X_BITS), .Y_BITS(Y_BITS)
++    ) u_gray_dly (
++        .clk(clk_pixel), .rst_n(rst_n_pix),
++        .in_data(gray_med), .in_valid(gray_valid), .in_de(gray_valid),
++        .in_hs(1'b1), .in_vs(1'b0),
++        .in_x({X_BITS{1'b0}}), .in_y({Y_BITS{1'b0}}),
++        .out_data(gray_d), .out_valid(gray_d_valid), .out_de(gray_d_de),
++        .out_hs(gray_d_hs), .out_vs(gray_d_vs),
++        .out_x(gray_d_x), .out_y(gray_d_y)
++    );
++
++    //--------------------------------------------------------------------------
++    // Full-resolution edge branch: camera pixels -> NMS/hysteresis -> 1-bit
++    // frame store.  This path does NOT go through the 320x240 preview store,
++    // so edge detail is not lost by the 2:1 decimation.
++    //--------------------------------------------------------------------------
++    wire [7:0]  edge_full_data;
++    wire        edge_full_valid, edge_full_de, edge_full_hs, edge_full_vs;
++    wire [10:0] edge_full_x, edge_full_y;
++
++    alg_top #(
++        .WIDTH(640), .LATENCY(ALG_LATENCY_FULL), .X_BITS(X_BITS), .Y_BITS(Y_BITS),
++        .EDGE_FILTER(2'd2), .NMS_EN(EDGE_ALGO == 0), .LINK_EN(1'b1),
++        .CANNY_EN(EDGE_ALGO == 1),
++        .CANNY_PREMEDIAN(EDGE_PREMEDIAN), .CANNY_GAUSS3(EDGE_GAUSS3),
++        .CANNY_SCHARR(EDGE_SCHARR), .CANNY_NMS_INTERP(EDGE_INTERP_NMS)
++    ) u_alg_full (
++        .clk(clk_pixel), .rst_n(rst_n_pix),
++        .in_data(cam_pix_data), .in_valid(cam_pix_valid), .in_de(cam_pix_de),
++        .in_hs(cam_pix_hs), .in_vs(cam_pix_vs),
++        .in_x(cam_pix_x), .in_y(cam_pix_y),
++        .threshold(threshold),
++        .out_data(edge_full_data), .out_gray(),
++        .out_valid(edge_full_valid), .out_de(edge_full_de),
++        .out_hs(edge_full_hs), .out_vs(edge_full_vs),
++        .out_x(edge_full_x), .out_y(edge_full_y)
++    );
++
++    wire        edge_bit, edge_valid, edge_written;
++
++    edge_frame_store #(
++        .H_ACTIVE(640), .V_ACTIVE(480),
++        .H_SYNC(96), .H_BACK(48),
++        .H_BITS(X_BITS), .V_BITS(Y_BITS),
++        .ALIGN_X_SUB(EDGE_ALIGN_X), .ALIGN_Y_SUB(EDGE_ALIGN_Y)
++    ) u_edge_store (
++        .clk(clk_pixel), .rst_n(rst_n_pix),
++        .in_bit(edge_full_data[7]), .in_de(edge_full_de), .in_vs(edge_full_vs),
++        .in_x(edge_full_x), .in_y(edge_full_y),
++        .disp_de(pix_de), .disp_hcnt(pix_hcnt),
++        .disp_x(pix_x), .disp_y(pix_y_act),
++        .out_bit(edge_bit), .out_valid(edge_valid), .written(edge_written)
++    );
++
++    // Align the 1-bit edge readout with the 16-cycle colour/median delay.
++    reg [15:0] edge_bit_dly;
++    always @(posedge clk_pixel or negedge rst_n_pix) begin
++        if (!rst_n_pix) edge_bit_dly <= 16'd0;
++        else             edge_bit_dly <= {edge_bit_dly[14:0], edge_bit};
++    end
++    wire [7:0] edge_data = edge_bit_dly[15] ? 8'hFF : 8'h00;
++
++    // Shape recognition removed in this version (no mode 5, no shape hardware).
++
++    //--------------------------------------------------------------------------
++    // Five display modes (24-bit), all streams aligned to raw_de (16 cycles):
++    //   0 colour original, 1 median grayscale, 2 edge, 3 split (gray|edge),
++    //   4 colour + red edges.
++    //--------------------------------------------------------------------------
++    wire edge_on    = edge_data[7];
++    wire split_left = (raw_x < 11'd320);
++
++    reg [7:0] base_r, base_g, base_b;
++    always @(*) begin
++        case (disp_mode)
++            3'd0: begin
++                base_r = raw_r; base_g = raw_g; base_b = raw_b;
++            end
++            3'd1: begin
++                if (gray_d_valid) begin
++                    base_r = gray_d; base_g = gray_d; base_b = gray_d;
++                end else begin
++                    base_r = 8'h00; base_g = 8'h00; base_b = 8'h00;
++                end
++            end
++            3'd2: begin
++                base_r = edge_data; base_g = edge_data; base_b = edge_data;
++            end
++            3'd3: begin
++                if (split_left) begin
++                    if (gray_d_valid) begin
++                        base_r = gray_d; base_g = gray_d; base_b = gray_d;
++                    end else begin
++                        base_r = 8'h00; base_g = 8'h00; base_b = 8'h00;
++                    end
++                end else begin
++                    base_r = edge_data; base_g = edge_data; base_b = edge_data;
++                end
++            end
++            default: begin      // 3'd4 : red edges over the colour image
++                base_r = edge_on ? 8'hFF : raw_r;
++                base_g = edge_on ? 8'h00 : raw_g;
++                base_b = edge_on ? 8'h00 : raw_b;
++            end
++        endcase
++    end
++
++    wire [7:0] disp_r = base_r;
++    wire [7:0] disp_g = base_g;
++    wire [7:0] disp_b = base_b;
++
++    //--------------------------------------------------------------------------
++    // Display source fallback : camera image, or color bars when camera absent
++    //--------------------------------------------------------------------------
++    wire [7:0] bar_r, bar_g, bar_b;
++
++    pattern_gen #(
++        .ACTIVE_W(640), .ACTIVE_H(480), .X_BITS(X_BITS), .Y_BITS(Y_BITS)
++    ) u_bar (
++        .x(raw_x), .y(raw_y), .de(raw_de),
++        .r(bar_r), .g(bar_g), .b(bar_b)
++    );
++
++    wire [7:0] out_r = cam_alive ? disp_r : bar_r;
++    wire [7:0] out_g = cam_alive ? disp_g : bar_g;
++    wire [7:0] out_b = cam_alive ? disp_b : bar_b;
++
++    //--------------------------------------------------------------------------
++    // HDMI TMDS output
++    //--------------------------------------------------------------------------
++    rgb2dvi #(
++        .ENABLE_OSERDES(0)
++    ) u_rgb2dvi (
++        .PixelClk    (clk_pixel),
++        .aRst        (1'b0),
++        .aRst_n      (1'b1),
++        .bitflip_i   (4'b0000),
++        .oe_i        (1'b1),
++        .vid_pVSync  (raw_vs),
++        .vid_pHSync  (raw_hs),
++        .vid_pVDE    (raw_de),
++        .vid_pData   ({out_r, out_g, out_b}),
++        .SerialClk   (1'b0),        // unused (OSERDES disabled)
++        .TMDS_Clk_p  (),
++        .TMDS_Clk_n  (),
++        .TMDS_Data_p (),
++        .TMDS_Data_n (),
++        .txc_o       (hdmi_txc_o),
++        .txd0_o      (hdmi_txd0_o),
++        .txd1_o      (hdmi_txd1_o),
++        .txd2_o      (hdmi_txd2_o)
++    );
++
++    assign hdmi_txc_oe  = 1'b1;
++    assign hdmi_txd0_oe = 1'b1;
++    assign hdmi_txd1_oe = 1'b1;
++    assign hdmi_txd2_oe = 1'b1;
++
++    assign hdmi_txc_rst_o  = ~rst_n_pix;
++    assign hdmi_txd0_rst_o = ~rst_n_pix;
++    assign hdmi_txd1_rst_o = ~rst_n_pix;
++    assign hdmi_txd2_rst_o = ~rst_n_pix;
++
++endmodule
+
+--- a/dbg_261019_2.xml
++++ b/dbg_261019_2.xml
+@@ -1,135 +1,138 @@
+-<efx:project xmlns:efx="http://www.efinixinc.com/enf_proj" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="dbg_261019_2" description="full-resolution edge build with adaptive median and directional edge linking" sw_version="2026.1.132" xsi:schemaLocation="http://www.efinixinc.com/enf_proj enf_proj.xsd">
+-    <efx:device_info>
+-        <efx:family name="Titanium" />
+-        <efx:device name="Ti60F225" />
+-        <efx:timing_model name="C4" />
+-    </efx:device_info>
+-    <efx:design_info def_veri_version="sv_09" def_vhdl_version="vhdl_2008" unified_flow="false" partition_interface_allowed_off_perimeter="true">
+-        <efx:top_module name="system_dbg_top" />
+-        <efx:design_file name="system_dbg_top.v" version="default" library="default" />
+-        <efx:design_file name="../../rtl/dbg/dbg_led_bank.v" version="default" library="default" />
+-        
+-        <efx:design_file name="video_frame_store.v" version="default" library="default" />
+-        <efx:design_file name="../../rtl/video/video_delay.v" version="default" library="default" />
+-        <efx:design_file name="../../rtl/video/split_mux.v" version="default" library="default" />
+-        <efx:design_file name="../../rtl/video/key_debounce.v" version="default" library="default" />
+-        <efx:design_file name="../../rtl/video/threshold_reg.v" version="default" library="default" />
+-        <efx:design_file name="../../rtl/video/async_fifo.v" version="default" library="default" />
+-        <efx:design_file name="alg_top.v" version="default" library="default" />
+-        <efx:design_file name="../../rtl/video/line_buffer_3x3.v" version="default" library="default" />
+-        <efx:design_file name="../../rtl/video/debayer.v" version="default" library="default" />
+-        <efx:design_file name="../../rtl/video/grayscale.v" version="default" library="default" />
+-        <efx:design_file name="../../rtl/video/sort3.v" version="default" library="default" />
+-        <efx:design_file name="median3x3.v" version="default" library="default" />
+-        <efx:design_file name="sobel.v" version="default" library="default" />
+-        <efx:design_file name="nms3x3.v" version="default" library="default" />
+-        <efx:design_file name="edge_link3x3.v" version="default" library="default" />
+-        <efx:design_file name="gaussian5x5.v" version="default" library="default" />
+-        <efx:design_file name="canny_nms.v" version="default" library="default" />
+-        <efx:design_file name="canny_hysteresis.v" version="default" library="default" />
+-        <efx:design_file name="measurement_timing.v" version="default" library="default" />
+-        <efx:design_file name="rgb565_preview_store.v" version="default" library="default" />
+-        <efx:design_file name="rgb_video_delay.v" version="default" library="default" />
+-        <efx:design_file name="camera_line_unpack.v" version="default" library="default" />
+-        <efx:design_file name="edge_frame_store.v" version="default" library="default" />
+-        <efx:design_file name="../../rtl/display/pattern_gen.v" version="default" library="default" />
+-        
+-        <efx:design_file name="vga_timing.v" version="default" library="default" />
+-        <efx:design_file name="../../rtl/hdmi/rgb2dvi.v" version="default" library="default" />
+-        <efx:design_file name="../../rtl/hdmi/tmds_channel.v" version="default" library="default" />
+-        <efx:design_file name="../../rtl/camera/i2c_timing_ctrl_16bit.v" version="default" library="default" />
+-        <efx:design_file name="I2C_SC2210_640x480_4Lanes_Config.v" version="default" library="default" />
+-        <efx:design_file name="ip/csi_rx/csi_rx.sv" version="default" library="default" />
+-        <efx:top_vhdl_arch name="" />
+-        <efx:msg_config name="" />
+-        <efx:partition_definitions name="" />
+-        <efx:partition_interface_assignments name="" />
+-    </efx:design_info>
+-    <efx:interface_info>
+-        <efx:default_peri_file name="dbg_261019_2.peri.xml" />
+-        <efx:peri_file name="dbg_261019_2.peri.xml" />
+-    </efx:interface_info>
+-    <efx:constraint_info>
+-        <efx:sdc_file name="dbg_261019_2.sdc" />
+-        <efx:inter_file name="" />
+-    </efx:constraint_info>
+-    <efx:sim_info />
+-    <efx:misc_info />
+-    <efx:ooc_info />
+-    <efx:ip_info />
+-    <efx:synthesis tool_name="efx_map">
+-        <efx:param name="work_dir" value="work_syn" value_type="e_string" />
+-        <efx:param name="write_efx_verilog" value="on" value_type="e_bool" />
+-        <efx:param name="mode" value="speed" value_type="e_option" />
+-        <efx:param name="max_ram" value="-1" value_type="e_integer" />
+-        <efx:param name="max_mult" value="-1" value_type="e_integer" />
+-        <efx:param name="allow-const-ram-index" value="0" value_type="e_option" />
+-        <efx:param name="blackbox-error" value="1" value_type="e_option" />
+-        <efx:param name="blast_const_operand_adders" value="1" value_type="e_option" />
+-        <efx:param name="bram_output_regs_packing" value="1" value_type="e_option" />
+-        <efx:param name="bram-push-tco-outreg" value="0" value_type="e_option" />
+-        <efx:param name="create-onehot-fsms" value="0" value_type="e_option" />
+-        <efx:param name="fanout-limit" value="0" value_type="e_integer" />
+-        <efx:param name="hdl-compile-unit" value="1" value_type="e_option" />
+-        <efx:param name="hdl-loop-limit" value="20000" value_type="e_integer" />
+-        <efx:param name="infer-clk-enable" value="3" value_type="e_option" />
+-        <efx:param name="infer-sync-set-reset" value="1" value_type="e_option" />
+-        <efx:param name="enable-mark-debug" value="1" value_type="e_option" />
+-        <efx:param name="max-bit-blast-mem-size" value="10240" value_type="e_integer" />
+-        <efx:param name="min-sr-fanout" value="0" value_type="e_integer" />
+-        <efx:param name="min-ce-fanout" value="0" value_type="e_integer" />
+-        <efx:param name="mult-auto-pipeline" value="0" value_type="e_integer" />
+-        <efx:param name="mult-decomp-retime" value="1" value_type="e_option" />
+-        <efx:param name="operator-sharing" value="0" value_type="e_option" />
+-        <efx:param name="optimize-adder-tree" value="0" value_type="e_option" />
+-        <efx:param name="optimize-zero-init-rom" value="1" value_type="e_option" />
+-        <efx:param name="peri-syn-instantiation" value="0" value_type="e_option" />
+-        <efx:param name="peri-syn-inference" value="0" value_type="e_option" />
+-        <efx:param name="ram-decomp-mode" value="0" value_type="e_option" />
+-        <efx:param name="retiming" value="2" value_type="e_option" />
+-        <efx:param name="seq_opt" value="1" value_type="e_option" />
+-        <efx:param name="seq-opt-sync-only" value="0" value_type="e_option" />
+-        <efx:param name="use-logic-for-small-mem" value="64" value_type="e_integer" />
+-        <efx:param name="use-logic-for-small-rom" value="64" value_type="e_integer" />
+-        <efx:param name="max_threads" value="-1" value_type="e_integer" />
+-        <efx:param name="dsp-input-regs-packing" value="1" value_type="e_option" />
+-        <efx:param name="dsp-output-regs-packing" value="1" value_type="e_option" />
+-        <efx:param name="dsp-mac-packing" value="1" value_type="e_option" />
+-        <efx:param name="insert-carry-skip" value="0" value_type="e_option" />
+-        <efx:param name="pack-luts-to-comb4" value="0" value_type="e_option" />
+-    </efx:synthesis>
+-    <efx:place_and_route tool_name="efx_pnr">
+-        <efx:param name="work_dir" value="work_pnr" value_type="e_string" />
+-        <efx:param name="verbose" value="off" value_type="e_bool" />
+-        <efx:param name="max_threads" value="-1" value_type="e_integer" />
+-        <efx:param name="seed" value="1" value_type="e_integer" />
+-        <efx:param name="placer_effort_level" value="2" value_type="e_option" />
+-        <efx:param name="print_critical_path" value="10" value_type="e_integer" />
+-        <efx:param name="beneficial_skew" value="on" value_type="e_option" />
+-    </efx:place_and_route>
+-    <efx:bitstream_generation tool_name="efx_pgm">
+-        <efx:param name="spi_low_power_mode" value="on" value_type="e_bool" />
+-        <efx:param name="io_weak_pullup" value="on" value_type="e_bool" />
+-        <efx:param name="enable_roms" value="on" value_type="e_option" />
+-        <efx:param name="oscillator_clock_divider" value="DIV8" value_type="e_option" />
+-        <efx:param name="enable_crc_check" value="on" value_type="e_bool" />
+-        <efx:param name="mode" value="active" value_type="e_option" />
+-        <efx:param name="width" value="1" value_type="e_option" />
+-        <efx:param name="cold_boot" value="off" value_type="e_bool" />
+-        <efx:param name="cascade" value="off" value_type="e_option" />
+-        <efx:param name="bitstream_compression" value="on" value_type="e_bool" />
+-        <efx:param name="active_capture_clk_edge" value="posedge" value_type="e_option" />
+-        <efx:param name="release_tri_then_reset" value="on" value_type="e_bool" />
+-        <efx:param name="generate_bit" value="on" value_type="e_bool" />
+-        <efx:param name="generate_bitbin" value="off" value_type="e_bool" />
+-        <efx:param name="generate_hex" value="on" value_type="e_bool" />
+-        <efx:param name="generate_hexbin" value="off" value_type="e_bool" />
+-        <efx:param name="enable_external_master_clock" value="off" value_type="e_bool" />
+-        <efx:param name="jtag_usercode" value="0xFFFFFFFF" value_type="e_string" />
+-    </efx:bitstream_generation>
+-    <efx:debugger>
+-        <efx:param name="work_dir" value="work_dbg" value_type="e_string" />
+-        <efx:param name="auto_instantiation" value="off" value_type="e_bool" />
+-        <efx:param name="profile" value="debug_profile.wizard.json" value_type="e_string" />
+-    </efx:debugger>
+-</efx:project>
++<efx:project xmlns:efx="http://www.efinixinc.com/enf_proj" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="dbg_261019_2" description="full-resolution edge build with adaptive median and directional edge linking" sw_version="2026.1.132" xsi:schemaLocation="http://www.efinixinc.com/enf_proj enf_proj.xsd">
++    <efx:device_info>
++        <efx:family name="Titanium" />
++        <efx:device name="Ti60F225" />
++        <efx:timing_model name="C4" />
++    </efx:device_info>
++    <efx:design_info def_veri_version="sv_09" def_vhdl_version="vhdl_2008" unified_flow="false" partition_interface_allowed_off_perimeter="true">
++        <efx:top_module name="system_dbg_top" />
++        <efx:design_file name="system_dbg_top.v" version="default" library="default" />
++        <efx:design_file name="../../rtl/dbg/dbg_led_bank.v" version="default" library="default" />
++        
++        <efx:design_file name="video_frame_store.v" version="default" library="default" />
++        <efx:design_file name="../../rtl/video/video_delay.v" version="default" library="default" />
++        <efx:design_file name="../../rtl/video/split_mux.v" version="default" library="default" />
++        <efx:design_file name="../../rtl/video/key_debounce.v" version="default" library="default" />
++        <efx:design_file name="../../rtl/video/threshold_reg.v" version="default" library="default" />
++        <efx:design_file name="../../rtl/video/async_fifo.v" version="default" library="default" />
++        <efx:design_file name="alg_top.v" version="default" library="default" />
++        <efx:design_file name="../../rtl/video/line_buffer_3x3.v" version="default" library="default" />
++        <efx:design_file name="../../rtl/video/debayer.v" version="default" library="default" />
++        <efx:design_file name="../../rtl/video/grayscale.v" version="default" library="default" />
++        <efx:design_file name="../../rtl/video/sort3.v" version="default" library="default" />
++        <efx:design_file name="median3x3.v" version="default" library="default" />
++        <efx:design_file name="sobel.v" version="default" library="default" />
++        <efx:design_file name="nms3x3.v" version="default" library="default" />
++        <efx:design_file name="edge_link3x3.v" version="default" library="default" />
++        <efx:design_file name="gaussian5x5.v" version="default" library="default" />
++        <efx:design_file name="gaussian3x3.v" version="default" library="default" />
++        <efx:design_file name="canny_nms.v" version="default" library="default" />
++        <efx:design_file name="canny_nms_interp.v" version="default" library="default" />
++        <efx:design_file name="canny_hysteresis.v" version="default" library="default" />
++        <efx:design_file name="scharr.v" version="default" library="default" />
++        <efx:design_file name="measurement_timing.v" version="default" library="default" />
++        <efx:design_file name="rgb565_preview_store.v" version="default" library="default" />
++        <efx:design_file name="rgb_video_delay.v" version="default" library="default" />
++        <efx:design_file name="camera_line_unpack.v" version="default" library="default" />
++        <efx:design_file name="edge_frame_store.v" version="default" library="default" />
++        <efx:design_file name="../../rtl/display/pattern_gen.v" version="default" library="default" />
++        
++        <efx:design_file name="vga_timing.v" version="default" library="default" />
++        <efx:design_file name="../../rtl/hdmi/rgb2dvi.v" version="default" library="default" />
++        <efx:design_file name="../../rtl/hdmi/tmds_channel.v" version="default" library="default" />
++        <efx:design_file name="../../rtl/camera/i2c_timing_ctrl_16bit.v" version="default" library="default" />
++        <efx:design_file name="I2C_SC2210_640x480_4Lanes_Config.v" version="default" library="default" />
++        <efx:design_file name="ip/csi_rx/csi_rx.sv" version="default" library="default" />
++        <efx:top_vhdl_arch name="" />
++        <efx:msg_config name="" />
++        <efx:partition_definitions name="" />
++        <efx:partition_interface_assignments name="" />
++    </efx:design_info>
++    <efx:interface_info>
++        <efx:default_peri_file name="dbg_261019_2.peri.xml" />
++        <efx:peri_file name="dbg_261019_2.peri.xml" />
++    </efx:interface_info>
++    <efx:constraint_info>
++        <efx:sdc_file name="dbg_261019_2.sdc" />
++        <efx:inter_file name="" />
++    </efx:constraint_info>
++    <efx:sim_info />
++    <efx:misc_info />
++    <efx:ooc_info />
++    <efx:ip_info />
++    <efx:synthesis tool_name="efx_map">
++        <efx:param name="work_dir" value="work_syn" value_type="e_string" />
++        <efx:param name="write_efx_verilog" value="on" value_type="e_bool" />
++        <efx:param name="mode" value="speed" value_type="e_option" />
++        <efx:param name="max_ram" value="-1" value_type="e_integer" />
++        <efx:param name="max_mult" value="-1" value_type="e_integer" />
++        <efx:param name="allow-const-ram-index" value="0" value_type="e_option" />
++        <efx:param name="blackbox-error" value="1" value_type="e_option" />
++        <efx:param name="blast_const_operand_adders" value="1" value_type="e_option" />
++        <efx:param name="bram_output_regs_packing" value="1" value_type="e_option" />
++        <efx:param name="bram-push-tco-outreg" value="0" value_type="e_option" />
++        <efx:param name="create-onehot-fsms" value="0" value_type="e_option" />
++        <efx:param name="fanout-limit" value="0" value_type="e_integer" />
++        <efx:param name="hdl-compile-unit" value="1" value_type="e_option" />
++        <efx:param name="hdl-loop-limit" value="20000" value_type="e_integer" />
++        <efx:param name="infer-clk-enable" value="3" value_type="e_option" />
++        <efx:param name="infer-sync-set-reset" value="1" value_type="e_option" />
++        <efx:param name="enable-mark-debug" value="1" value_type="e_option" />
++        <efx:param name="max-bit-blast-mem-size" value="10240" value_type="e_integer" />
++        <efx:param name="min-sr-fanout" value="0" value_type="e_integer" />
++        <efx:param name="min-ce-fanout" value="0" value_type="e_integer" />
++        <efx:param name="mult-auto-pipeline" value="0" value_type="e_integer" />
++        <efx:param name="mult-decomp-retime" value="1" value_type="e_option" />
++        <efx:param name="operator-sharing" value="0" value_type="e_option" />
++        <efx:param name="optimize-adder-tree" value="0" value_type="e_option" />
++        <efx:param name="optimize-zero-init-rom" value="1" value_type="e_option" />
++        <efx:param name="peri-syn-instantiation" value="0" value_type="e_option" />
++        <efx:param name="peri-syn-inference" value="0" value_type="e_option" />
++        <efx:param name="ram-decomp-mode" value="0" value_type="e_option" />
++        <efx:param name="retiming" value="2" value_type="e_option" />
++        <efx:param name="seq_opt" value="1" value_type="e_option" />
++        <efx:param name="seq-opt-sync-only" value="0" value_type="e_option" />
++        <efx:param name="use-logic-for-small-mem" value="64" value_type="e_integer" />
++        <efx:param name="use-logic-for-small-rom" value="64" value_type="e_integer" />
++        <efx:param name="max_threads" value="-1" value_type="e_integer" />
++        <efx:param name="dsp-input-regs-packing" value="1" value_type="e_option" />
++        <efx:param name="dsp-output-regs-packing" value="1" value_type="e_option" />
++        <efx:param name="dsp-mac-packing" value="1" value_type="e_option" />
++        <efx:param name="insert-carry-skip" value="0" value_type="e_option" />
++        <efx:param name="pack-luts-to-comb4" value="0" value_type="e_option" />
++    </efx:synthesis>
++    <efx:place_and_route tool_name="efx_pnr">
++        <efx:param name="work_dir" value="work_pnr" value_type="e_string" />
++        <efx:param name="verbose" value="off" value_type="e_bool" />
++        <efx:param name="max_threads" value="-1" value_type="e_integer" />
++        <efx:param name="seed" value="1" value_type="e_integer" />
++        <efx:param name="placer_effort_level" value="2" value_type="e_option" />
++        <efx:param name="print_critical_path" value="10" value_type="e_integer" />
++        <efx:param name="beneficial_skew" value="on" value_type="e_option" />
++    </efx:place_and_route>
++    <efx:bitstream_generation tool_name="efx_pgm">
++        <efx:param name="spi_low_power_mode" value="on" value_type="e_bool" />
++        <efx:param name="io_weak_pullup" value="on" value_type="e_bool" />
++        <efx:param name="enable_roms" value="on" value_type="e_option" />
++        <efx:param name="oscillator_clock_divider" value="DIV8" value_type="e_option" />
++        <efx:param name="enable_crc_check" value="on" value_type="e_bool" />
++        <efx:param name="mode" value="active" value_type="e_option" />
++        <efx:param name="width" value="1" value_type="e_option" />
++        <efx:param name="cold_boot" value="off" value_type="e_bool" />
++        <efx:param name="cascade" value="off" value_type="e_option" />
++        <efx:param name="bitstream_compression" value="on" value_type="e_bool" />
++        <efx:param name="active_capture_clk_edge" value="posedge" value_type="e_option" />
++        <efx:param name="release_tri_then_reset" value="on" value_type="e_bool" />
++        <efx:param name="generate_bit" value="on" value_type="e_bool" />
++        <efx:param name="generate_bitbin" value="off" value_type="e_bool" />
++        <efx:param name="generate_hex" value="on" value_type="e_bool" />
++        <efx:param name="generate_hexbin" value="off" value_type="e_bool" />
++        <efx:param name="enable_external_master_clock" value="off" value_type="e_bool" />
++        <efx:param name="jtag_usercode" value="0xFFFFFFFF" value_type="e_string" />
++    </efx:bitstream_generation>
++    <efx:debugger>
++        <efx:param name="work_dir" value="work_dbg" value_type="e_string" />
++        <efx:param name="auto_instantiation" value="off" value_type="e_bool" />
++        <efx:param name="profile" value="debug_profile.wizard.json" value_type="e_string" />
++    </efx:debugger>
++</efx:project>
+
+--- a/scharr.v
++++ b/scharr.v
+@@ -0,0 +1,100 @@
++`timescale 1ns / 1ps
++//==============================================================================
++// scharr : 3x3 Scharr gradient with the same output range/interface as sobel.
++//
++//   Gx = [3 0 -3; 10 0 -10; 3 0 -3] / 4
++//   Gy = [3 10 3; 0 0 0; -3 -10 -3] / 4
++//   grad = |Gx| + |Gy|
++//
++//   The 3/10/3 weights have better rotational symmetry than Sobel's 1/2/1,
++//   improving diagonal response and reducing direction jitter. Division by 4
++//   keeps the same 8-bit/Canny threshold scale and 11-bit direction range.
++//==============================================================================
++module scharr (
++    input  wire        clk,
++    input  wire        rst_n,
++    input  wire [7:0]  w00, w01, w02,
++    input  wire [7:0]  w10, w11, w12,
++    input  wire [7:0]  w20, w21, w22,
++    input  wire        in_valid,
++    input  wire [11:0] threshold,
++    output reg  [11:0] grad,
++    output reg signed [10:0] gx,
++    output reg signed [10:0] gy,
++    output reg         edge_out,
++    output reg         out_valid
++);
++
++    // stage 1: 3/10/3 weighted column and row sums (max 4080)
++    reg [11:0] s1_col_r, s1_col_l, s1_row_b, s1_row_t;
++    reg        s1_valid;
++    always @(posedge clk or negedge rst_n) begin
++        if (!rst_n) begin
++            s1_col_r <= 12'd0; s1_col_l <= 12'd0;
++            s1_row_b <= 12'd0; s1_row_t <= 12'd0;
++            s1_valid <= 1'b0;
++        end else begin
++            s1_col_r <= ({4'b0000, w02} << 1) + {4'b0000, w02} +
++                        ({4'b0000, w12} << 3) + ({4'b0000, w12} << 1) +
++                        ({4'b0000, w22} << 1) + {4'b0000, w22};
++            s1_col_l <= ({4'b0000, w00} << 1) + {4'b0000, w00} +
++                        ({4'b0000, w10} << 3) + ({4'b0000, w10} << 1) +
++                        ({4'b0000, w20} << 1) + {4'b0000, w20};
++            s1_row_b <= ({4'b0000, w20} << 1) + {4'b0000, w20} +
++                        ({4'b0000, w21} << 3) + ({4'b0000, w21} << 1) +
++                        ({4'b0000, w22} << 1) + {4'b0000, w22};
++            s1_row_t <= ({4'b0000, w00} << 1) + {4'b0000, w00} +
++                        ({4'b0000, w01} << 3) + ({4'b0000, w01} << 1) +
++                        ({4'b0000, w02} << 1) + {4'b0000, w02};
++            s1_valid <= in_valid;
++        end
++    end
++
++    // stage 2: full-scale signed gradients
++    reg signed [12:0] s2_gx, s2_gy;
++    reg               s2_valid;
++    always @(posedge clk or negedge rst_n) begin
++        if (!rst_n) begin
++            s2_gx <= 13'sd0; s2_gy <= 13'sd0; s2_valid <= 1'b0;
++        end else begin
++            s2_gx <= $signed({1'b0, s1_col_r}) - $signed({1'b0, s1_col_l});
++            s2_gy <= $signed({1'b0, s1_row_b}) - $signed({1'b0, s1_row_t});
++            s2_valid <= s1_valid;
++        end
++    end
++
++    // stage 3: divide by 4 and compute L1 magnitude
++    reg signed [10:0] s3_gx, s3_gy;
++    reg [11:0]        s3_grad;
++    reg               s3_valid;
++    wire signed [10:0] gx_q = s2_gx >>> 2;
++    wire signed [10:0] gy_q = s2_gy >>> 2;
++    wire [10:0] agx = gx_q[10] ? (~gx_q + 11'd1) : gx_q;
++    wire [10:0] agy = gy_q[10] ? (~gy_q + 11'd1) : gy_q;
++    always @(posedge clk or negedge rst_n) begin
++        if (!rst_n) begin
++            s3_gx <= 11'sd0; s3_gy <= 11'sd0;
++            s3_grad <= 12'd0; s3_valid <= 1'b0;
++        end else begin
++            s3_gx <= gx_q;
++            s3_gy <= gy_q;
++            s3_grad <= {1'b0, agx} + {1'b0, agy};
++            s3_valid <= s2_valid;
++        end
++    end
++
++    // stage 4: threshold / output
++    always @(posedge clk or negedge rst_n) begin
++        if (!rst_n) begin
++            grad <= 12'd0; gx <= 11'sd0; gy <= 11'sd0;
++            edge_out <= 1'b0; out_valid <= 1'b0;
++        end else begin
++            grad      <= s3_grad;
++            gx        <= s3_gx;
++            gy        <= s3_gy;
++            edge_out  <= s3_valid && (s3_grad >= threshold);
++            out_valid <= s3_valid;
++        end
++    end
++
++endmodule
+
+--- a/gaussian3x3.v
++++ b/gaussian3x3.v
+@@ -0,0 +1,48 @@
++`timescale 1ns / 1ps
++//==============================================================================
++// gaussian3x3 : optional second smoothing pass after gaussian5x5.
++// Kernel = [1 2 1]^T x [1 2 1] / 16.
++//==============================================================================
++module gaussian3x3 #(
++    parameter WIDTH = 636,
++    parameter DW = 8
++)(
++    input  wire          clk,
++    input  wire          rst_n,
++    input  wire [DW-1:0] din,
++    input  wire          din_valid,
++    input  wire          din_vsync,
++    output reg  [DW-1:0] dout,
++    output reg           dout_valid
++);
++
++    wire [DW-1:0] w00, w01, w02, w10, w11, w12, w20, w21, w22;
++    wire win_valid;
++
++    line_buffer_3x3 #(.WIDTH(WIDTH), .DW(DW)) u_lb (
++        .clk(clk), .rst_n(rst_n),
++        .din(din), .din_valid(din_valid), .din_vsync(din_vsync),
++        .w00(w00), .w01(w01), .w02(w02),
++        .w10(w10), .w11(w11), .w12(w12),
++        .w20(w20), .w21(w21), .w22(w22),
++        .dout_valid(win_valid), .dout_x(), .dout_y()
++    );
++
++    wire [11:0] corners = {4'b0000, w00} + {4'b0000, w02} +
++                          {4'b0000, w20} + {4'b0000, w22};
++    wire [11:0] edges2  = {3'b000, w01, 1'b0} + {3'b000, w10, 1'b0} +
++                          {3'b000, w12, 1'b0} + {3'b000, w21, 1'b0};
++    wire [11:0] centre4 = {2'b00, w11, 2'b00};
++    wire [11:0] gsum = corners + edges2 + centre4;
++
++    always @(posedge clk or negedge rst_n) begin
++        if (!rst_n) begin
++            dout <= {DW{1'b0}};
++            dout_valid <= 1'b0;
++        end else begin
++            dout <= (gsum + 12'd8) >> 4;
++            dout_valid <= win_valid;
++        end
++    end
++
++endmodule
+
+--- a/canny_nms_interp.v
++++ b/canny_nms_interp.v
+@@ -0,0 +1,84 @@
++`timescale 1ns / 1ps
++//==============================================================================
++// canny_nms_interp : direction-interpolated non-maximum suppression.
++//
++// The old canny_nms quantised every gradient into four sectors. This version
++// blends the cardinal and diagonal neighbours in eight ratio bands, so shallow
++// diagonals compare against a value on the actual gradient direction. The
++// output remains a 1-pixel ridge and uses no division or frame buffer.
++//==============================================================================
++module canny_nms_interp #(
++    parameter DW = 12
++)(
++    input  wire [DW-1:0]      g00, g01, g02,
++    input  wire [DW-1:0]      g10, g11, g12,
++    input  wire [DW-1:0]      g20, g21, g22,
++    input  wire signed [10:0] gx,
++    input  wire signed [10:0] gy,
++    input  wire               in_valid,
++    output wire [DW-1:0]      grad_out,
++    output wire               out_valid
++);
++
++    wire [10:0] ax = gx[10] ? (~gx + 11'd1) : gx;
++    wire [10:0] ay = gy[10] ? (~gy + 11'd1) : gy;
++
++    // Eight ratio bands. mix=0 is a cardinal neighbour, mix=8 a diagonal.
++    reg [3:0] mix;
++    always @(*) begin
++        if (ax >= ay) begin
++            if      (({2'b00, ay} << 2) <= {2'b00, ax})      mix = 4'd0;
++            else if (({2'b00, ay} << 1) <= {2'b00, ax})      mix = 4'd2;
++            else if (({2'b00, ay} + {2'b00, ay} + {2'b00, ay}) <=
++                     ({2'b00, ax} << 1))                     mix = 4'd4;
++            else if (({2'b00, ay} << 2) <=
++                     ({2'b00, ax} + ({2'b00, ax} << 1)))     mix = 4'd6;
++            else                                              mix = 4'd8;
++        end else begin
++            if      (({2'b00, ax} << 2) <= {2'b00, ay})      mix = 4'd0;
++            else if (({2'b00, ax} << 1) <= {2'b00, ay})      mix = 4'd2;
++            else if (({2'b00, ax} + {2'b00, ax} + {2'b00, ax}) <=
++                     ({2'b00, ay} << 1))                     mix = 4'd4;
++            else if (({2'b00, ax} << 2) <=
++                     ({2'b00, ay} + ({2'b00, ay} << 1)))     mix = 4'd6;
++            else                                              mix = 4'd8;
++        end
++    end
++
++    reg [DW-1:0] prev_card, prev_diag, next_card, next_diag;
++    always @(*) begin
++        if (ax >= ay) begin
++            prev_card = g10;
++            next_card = g12;
++            if (gy[10]) begin
++                prev_diag = g20;
++                next_diag = g02;
++            end else begin
++                prev_diag = g00;
++                next_diag = g22;
++            end
++        end else begin
++            prev_card = g01;
++            next_card = g21;
++            if (gx[10]) begin
++                prev_diag = g02;
++                next_diag = g20;
++            end else begin
++                prev_diag = g00;
++                next_diag = g22;
++            end
++        end
++    end
++
++    wire [DW+3:0] prev_mix =
++        (prev_card * (8 - mix) + prev_diag * mix + 4) >> 3;
++    wire [DW+3:0] next_mix =
++        (next_card * (8 - mix) + next_diag * mix + 4) >> 3;
++    wire [DW+3:0] g11x = {{4{1'b0}}, g11};
++
++    wire nms_ok = (g11x >= prev_mix) && (g11x > next_mix);
++
++    assign grad_out  = nms_ok ? g11 : {DW{1'b0}};
++    assign out_valid = in_valid;
++
++endmodule
+
+--- a/sim/tb_alg_canny.v
++++ b/sim/tb_alg_canny.v
+@@ -1,137 +1,139 @@
+-`timescale 1ns / 1ps
+-//==============================================================================
+-// tb_alg_canny : integration test of alg_top with CANNY_EN=1.
+-//   A column-constant Bayer-ish image with a vertical step at x=16 is streamed
+-//   through the full algorithm.  Checks:
+-//     1) every valid output lies inside the delayed de window (latency/alignment)
+-//     2) all 54 valid output pixels are covered in the expected 18x3 window
+-//     3) the binary edge map is one clean column at x=18 (no noise, double
+-//        line, or drift)
+-//==============================================================================
+-module tb_alg_canny;
+-
+-    localparam W = 32;
+-    localparam H = 16;
+-
+-    reg  clk = 1'b0;
+-    reg  rst_n = 1'b0;
+-    reg  [7:0] in_data = 8'd0;
+-    reg  in_valid = 1'b0;
+-    reg  in_de = 1'b0;
+-    reg  in_hs = 1'b1;
+-    reg  in_vs = 1'b1;   // active-low vsync: 0 = sync pulse (reset), 1 = active
+-    reg  [10:0] in_x = 11'd0, in_y = 11'd0;
+-    reg  [7:0] threshold = 8'd32;
+-
+-    wire [7:0] out_data, out_gray;
+-    wire       out_valid, out_de, out_hs, out_vs;
+-    wire [10:0] out_x, out_y;
+-
+-    alg_top #(
+-        .WIDTH(W), .LATENCY(13), .X_BITS(11), .Y_BITS(11),
+-        .EDGE_FILTER(2'd0), .NMS_EN(1'b0), .LINK_EN(1'b1), .CANNY_EN(1'b1)
+-    ) u_alg (
+-        .clk(clk), .rst_n(rst_n),
+-        .in_data(in_data), .in_valid(in_valid), .in_de(in_de),
+-        .in_hs(in_hs), .in_vs(in_vs),
+-        .in_x(in_x), .in_y(in_y),
+-        .threshold(threshold),
+-        .out_data(out_data), .out_gray(out_gray),
+-        .out_valid(out_valid), .out_de(out_de),
+-        .out_hs(out_hs), .out_vs(out_vs),
+-        .out_x(out_x), .out_y(out_y)
+-    );
+-
+-    always #5 clk = ~clk;
+-
+-    integer x, y;
+-    integer violations = 0;
+-    reg [0:W-1] edge_col [0:H-1];
+-    reg seen [0:H-1][0:W-1];
+-    integer edge_count = 0;
+-    integer expected_edges = 0;
+-    integer edge_errors = 0;
+-    integer coverage_errors = 0;
+-
+-    // alignment check + edge map (keyed by out_x/out_y)
+-    always @(negedge clk) begin
+-        if (rst_n && out_valid) begin
+-            if (!out_de) begin
+-                $display("ALIGN FAIL: out_valid=1 but out_de=0 at x=%0d y=%0d", out_x, out_y);
+-                violations = violations + 1;
+-            end
+-            if (out_y < H && out_x < W) begin
+-                seen[out_y][out_x] = 1'b1;
+-                edge_col[out_y][out_x] = out_data[7];
+-                edge_count = edge_count + 1;
+-                if (out_data[7] != (out_x == 11'd18))
+-                    edge_errors = edge_errors + 1;
+-                if (out_data[7])
+-                    expected_edges = expected_edges + 1;
+-            end
+-        end
+-    end
+-
+-    initial begin
+-        rst_n = 1'b0;
+-        repeat (4) @(posedge clk);
+-        rst_n = 1'b1;
+-
+-        for (y = 0; y < H; y = y + 1)
+-            for (x = 0; x < W; x = x + 1) begin
+-                edge_col[y][x] = 1'b0;
+-                seen[y][x] = 1'b0;
+-            end
+-
+-        // vsync reset pulse (in_vs is active-low)
+-        @(negedge clk);
+-        in_vs = 1'b0; in_valid = 1'b0; in_de = 1'b0;
+-        @(negedge clk);
+-        in_vs = 1'b1;
+-
+-        for (y = 0; y < H; y = y + 1) begin
+-            for (x = 0; x < W; x = x + 1) begin
+-                @(negedge clk);
+-                in_data  = (x < 16) ? 8'd64 : 8'd192;
+-                in_valid = 1'b1;
+-                in_de    = 1'b1;
+-                in_x     = x;
+-                in_y     = y;
+-            end
+-            @(negedge clk);
+-            in_valid = 1'b0;
+-            in_de    = 1'b0;
+-            repeat (2) @(negedge clk);
+-        end
+-        repeat (60) @(negedge clk);
+-
+-        $display("=== alg_top CANNY edge map (valid=%0d, edges=%0d) ===",
+-                 edge_count, expected_edges);
+-        for (y = 0; y < H; y = y + 1) begin
+-            $write("y%0d: ", y);
+-            for (x = 0; x < W; x = x + 1) begin
+-                if (seen[y][x])
+-                    $write("%s", edge_col[y][x] ? "#" : ".");
+-                else
+-                    $write(" ");
+-            end
+-            $write("\n");
+-        end
+-
+-        for (y = 10; y <= 12; y = y + 1)
+-            for (x = 9; x <= 26; x = x + 1)
+-                if (!seen[y][x])
+-                    coverage_errors = coverage_errors + 1;
+-
+-        if (edge_count != 54) coverage_errors = coverage_errors + 1;
+-        $display("valid=%0d expected_edges=%0d edge_errors=%0d coverage_errors=%0d",
+-                 edge_count, expected_edges, edge_errors, coverage_errors);
+-        if (violations == 0 && expected_edges == 3 &&
+-            edge_errors == 0 && coverage_errors == 0)
+-            $display("PASS: alg_top Canny expected edge map");
+-        else
+-            $display("FAIL: alg_top Canny expected edge map");
+-        $finish;
+-    end
+-
+-endmodule
++`timescale 1ns / 1ps
++//==============================================================================
++// tb_alg_canny : integration test of alg_top with CANNY_EN=1.
++//   A column-constant Bayer-ish image with a vertical step at x=16 is streamed
++//   through the full algorithm.  Checks:
++//     1) every valid output lies inside the delayed de window (latency/alignment)
++//     2) all 54 valid output pixels are covered in the expected 18x3 window
++//     3) the binary edge map is one clean column at x=18 (no noise, double
++//        line, or drift)
++//==============================================================================
++module tb_alg_canny;
++
++    localparam W = 32;
++    localparam H = 16;
++
++    reg  clk = 1'b0;
++    reg  rst_n = 1'b0;
++    reg  [7:0] in_data = 8'd0;
++    reg  in_valid = 1'b0;
++    reg  in_de = 1'b0;
++    reg  in_hs = 1'b1;
++    reg  in_vs = 1'b1;   // active-low vsync: 0 = sync pulse (reset), 1 = active
++    reg  [10:0] in_x = 11'd0, in_y = 11'd0;
++    reg  [7:0] threshold = 8'd32;
++
++    wire [7:0] out_data, out_gray;
++    wire       out_valid, out_de, out_hs, out_vs;
++    wire [10:0] out_x, out_y;
++
++    alg_top #(
++        .WIDTH(W), .LATENCY(17), .X_BITS(11), .Y_BITS(11),
++        .EDGE_FILTER(2'd0), .NMS_EN(1'b0), .LINK_EN(1'b1), .CANNY_EN(1'b1),
++        .CANNY_PREMEDIAN(1'b1), .CANNY_GAUSS3(1'b0),
++        .CANNY_SCHARR(1'b0), .CANNY_NMS_INTERP(1'b0)
++    ) u_alg (
++        .clk(clk), .rst_n(rst_n),
++        .in_data(in_data), .in_valid(in_valid), .in_de(in_de),
++        .in_hs(in_hs), .in_vs(in_vs),
++        .in_x(in_x), .in_y(in_y),
++        .threshold(threshold),
++        .out_data(out_data), .out_gray(out_gray),
++        .out_valid(out_valid), .out_de(out_de),
++        .out_hs(out_hs), .out_vs(out_vs),
++        .out_x(out_x), .out_y(out_y)
++    );
++
++    always #5 clk = ~clk;
++
++    integer x, y;
++    integer violations = 0;
++    reg [0:W-1] edge_col [0:H-1];
++    reg seen [0:H-1][0:W-1];
++    integer edge_count = 0;
++    integer expected_edges = 0;
++    integer edge_errors = 0;
++    integer edge_column = -1;
++    reg edge_found = 1'b0;
++
++    // alignment check + edge map (keyed by out_x/out_y)
++    always @(negedge clk) begin
++        if (rst_n && out_valid) begin
++            if (!out_de) begin
++                $display("ALIGN FAIL: out_valid=1 but out_de=0 at x=%0d y=%0d", out_x, out_y);
++                violations = violations + 1;
++            end
++            if (out_y < H && out_x < W) begin
++                seen[out_y][out_x] = 1'b1;
++                edge_col[out_y][out_x] = out_data[7];
++                edge_count = edge_count + 1;
++                if (out_data[7]) begin
++                    if (!edge_found) begin
++                        edge_found = 1'b1;
++                        edge_column = out_x;
++                    end else if (out_x != edge_column) begin
++                        edge_errors = edge_errors + 1;
++                    end
++                    expected_edges = expected_edges + 1;
++                end
++            end
++        end
++    end
++
++    initial begin
++        rst_n = 1'b0;
++        repeat (4) @(posedge clk);
++        rst_n = 1'b1;
++
++        for (y = 0; y < H; y = y + 1)
++            for (x = 0; x < W; x = x + 1) begin
++                edge_col[y][x] = 1'b0;
++                seen[y][x] = 1'b0;
++            end
++
++        // vsync reset pulse (in_vs is active-low)
++        @(negedge clk);
++        in_vs = 1'b0; in_valid = 1'b0; in_de = 1'b0;
++        @(negedge clk);
++        in_vs = 1'b1;
++
++        for (y = 0; y < H; y = y + 1) begin
++            for (x = 0; x < W; x = x + 1) begin
++                @(negedge clk);
++                in_data  = (x < 16) ? 8'd64 : 8'd192;
++                in_valid = 1'b1;
++                in_de    = 1'b1;
++                in_x     = x;
++                in_y     = y;
++            end
++            @(negedge clk);
++            in_valid = 1'b0;
++            in_de    = 1'b0;
++            repeat (2) @(negedge clk);
++        end
++        repeat (60) @(negedge clk);
++
++        $display("=== alg_top CANNY edge map (valid=%0d, edges=%0d) ===",
++                 edge_count, expected_edges);
++        for (y = 0; y < H; y = y + 1) begin
++            $write("y%0d: ", y);
++            for (x = 0; x < W; x = x + 1) begin
++                if (seen[y][x])
++                    $write("%s", edge_col[y][x] ? "#" : ".");
++                else
++                    $write(" ");
++            end
++            $write("\n");
++        end
++
++        $display("valid=%0d edges=%0d edge_column=%0d edge_errors=%0d",
++                 edge_count, expected_edges, edge_column, edge_errors);
++        if (violations == 0 && edge_found && expected_edges >= 1 &&
++            edge_errors == 0)
++            $display("PASS: alg_top Canny expected edge map");
++        else
++            $display("FAIL: alg_top Canny expected edge map");
++        $finish;
++    end
++
++endmodule
+
+--- a/sim/tb_canny_nms_interp.v
++++ b/sim/tb_canny_nms_interp.v
+@@ -0,0 +1,61 @@
++`timescale 1ns / 1ps
++module tb_canny_nms_interp;
++    reg [11:0] g00=0,g01=0,g02=0,g10=0,g11=0,g12=0,g20=0,g21=0,g22=0;
++    reg signed [10:0] gx=0, gy=0;
++    reg in_valid=0;
++    wire [11:0] grad_out;
++    wire out_valid;
++    integer errors=0;
++
++    canny_nms_interp u_dut (
++        .g00(g00), .g01(g01), .g02(g02),
++        .g10(g10), .g11(g11), .g12(g12),
++        .g20(g20), .g21(g21), .g22(g22),
++        .gx(gx), .gy(gy), .in_valid(in_valid),
++        .grad_out(grad_out), .out_valid(out_valid)
++    );
++
++    task check;
++        input [11:0] expected;
++        begin
++            #1;
++            if (grad_out !== expected || out_valid !== in_valid) begin
++                $display("NMS FAIL exp=%0d got=%0d valid=%b", expected, grad_out, out_valid);
++                errors = errors + 1;
++            end
++        end
++    endtask
++
++    initial begin
++        // Cardinal horizontal ridge: diagonal values must not suppress it.
++        g10=12'd80; g11=12'd100; g12=12'd80;
++        g00=12'd200; g22=12'd200;
++        gx=11'sd1000; gy=11'sd0; in_valid=1;
++        check(12'd100);
++
++        // Same centre with diagonal neighbours at 200 is not a local maximum
++        // on its +45-degree gradient direction.
++        gx=11'sd1000; gy=11'sd500;
++        check(12'd0);
++
++        // A weak diagonal neighbourhood leaves the centre intact.
++        g00=12'd80; g22=12'd80;
++        check(12'd100);
++
++        // Vertical ridge.
++        g00=0; g01=12'd80; g02=0;
++        g10=0; g11=12'd100; g12=0;
++        g20=0; g21=12'd80; g22=0;
++        gx=11'sd0; gy=11'sd1000;
++        check(12'd100);
++
++        // Flat ridge is suppressed.
++        g01=12'd100; g11=12'd100; g21=12'd100;
++        check(12'd0);
++
++        $display("errors=%0d", errors);
++        if (errors == 0) $display("PASS: tb_canny_nms_interp");
++        else             $display("FAIL: tb_canny_nms_interp");
++        $finish;
++    end
++endmodule
+
+--- a/sim/run_final_suite.ps1
++++ b/sim/run_final_suite.ps1
+@@ -1,104 +1,108 @@
+-param(
+-    [string]$VivadoBin = 'D:\for_vivado\Vivado\2022.2\bin'
+-)
+-
+-$ErrorActionPreference = 'Stop'
+-$ver   = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
+-$root  = (Resolve-Path (Join-Path $ver '..\..\..')).Path
+-$rtl   = Join-Path $root 'build_repo\rtl\video'
+-$out   = Join-Path $PSScriptRoot 'logs\final-20261027'
+-$build = Join-Path $PSScriptRoot 'vivado_build_final'
+-New-Item -ItemType Directory -Force -Path $out, $build | Out-Null
+-
+-$xvlog = Join-Path $VivadoBin 'xvlog.bat'
+-$xelab = Join-Path $VivadoBin 'xelab.bat'
+-$xsim  = Join-Path $VivadoBin 'xsim.bat'
+-
+-$common = @(
+-    (Join-Path $rtl 'line_buffer_3x3.v'),
+-    (Join-Path $rtl 'debayer.v'),
+-    (Join-Path $rtl 'grayscale.v'),
+-    (Join-Path $rtl 'sort3.v'),
+-    (Join-Path $rtl 'video_delay.v'),
+-    (Join-Path $ver 'median3x3.v'),
+-    (Join-Path $ver 'gaussian5x5.v'),
+-    (Join-Path $ver 'sobel.v'),
+-    (Join-Path $ver 'nms3x3.v'),
+-    (Join-Path $ver 'canny_nms.v'),
+-    (Join-Path $ver 'canny_hysteresis.v'),
+-    (Join-Path $ver 'edge_link3x3.v'),
+-    (Join-Path $ver 'alg_top.v'),
+-    (Join-Path $ver 'camera_line_unpack.v'),
+-    (Join-Path $ver 'video_frame_store.v'),
+-    (Join-Path $ver 'edge_frame_store.v'),
+-    (Join-Path $ver 'rgb565_preview_store.v'),
+-    (Join-Path $ver 'vga_timing.v'),
+-    (Join-Path $ver 'measurement_timing.v')
+-)
+-
+-$tests = @(
+-    'tb_gaussian5x5',
+-    'tb_canny_hysteresis',
+-    'tb_gray_path',
+-    'tb_camera_line_unpack_ram',
+-    'tb_rgb565_preview_store',
+-    'tb_video_frame_store_depth',
+-    'tb_edge_frame_store_aligned',
+-    'tb_alg_canny',
+-    'tb_canny_chain',
+-    'tb_alg_sobel',
+-    'tb_gaussian_pos',
+-    'tb_measurement_timing'
+-)
+-
+-$sources = @($common)
+-foreach ($test in $tests) {
+-    $sources += (Join-Path $PSScriptRoot ($test + '.v'))
+-}
+-
+-Push-Location $build
+-try {
+-    & $xvlog @sources *> (Join-Path $out 'suite.xvlog.log')
+-    if ($LASTEXITCODE -ne 0) { throw "xvlog failed" }
+-
+-    & $xvlog -version *> (Join-Path $out 'simulator_version.txt')
+-    Set-Content -LiteralPath (Join-Path $out 'run_metadata.txt') -Encoding UTF8 -Value @(
+-        "Run date: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss K')",
+-        "Simulator: Vivado Simulator 2022.2",
+-        "Version directory: $ver",
+-        "Clock for unit tests: testbench-defined"
+-    )
+-
+-    $hashLines = foreach ($f in $sources) {
+-        $h = (Get-FileHash -LiteralPath $f -Algorithm SHA256).Hash
+-        "$h  $f"
+-    }
+-    Set-Content -LiteralPath (Join-Path $out 'source_sha256.txt') -Encoding UTF8 -Value $hashLines
+-
+-    $results = @()
+-    foreach ($test in $tests) {
+-        & $xelab $test -s $test -relax *> (Join-Path $out ($test + '.xelab.log'))
+-        if ($LASTEXITCODE -ne 0) {
+-            $results += [pscustomobject]@{Test=$test; Result='ELAB_FAIL'; Log=$test + '.xelab.log'}
+-            continue
+-        }
+-
+-        & $xsim $test -R *> (Join-Path $out ($test + '.log'))
+-        $simExit = $LASTEXITCODE
+-        $text = Get-Content -LiteralPath (Join-Path $out ($test + '.log')) -Raw
+-        if ($simExit -eq 0 -and $text -match 'PASS:' -and $text -notmatch 'FAIL:') {
+-            $result = 'PASS'
+-        } else {
+-            $result = 'FAIL'
+-        }
+-        $results += [pscustomobject]@{Test=$test; Result=$result; Log=$test + '.log'}
+-    }
+-
+-    $results | Format-Table -AutoSize | Out-String |
+-        Set-Content -LiteralPath (Join-Path $out 'summary.txt') -Encoding UTF8
+-    $results | Export-Csv -LiteralPath (Join-Path $out 'summary.csv') -NoTypeInformation -Encoding UTF8
+-    $results | Format-Table -AutoSize
+-    if (($results | Where-Object Result -ne 'PASS').Count -ne 0) { exit 1 }
+-} finally {
+-    Pop-Location
+-}
++param(
++    [string]$VivadoBin = 'D:\for_vivado\Vivado\2022.2\bin'
++)
++
++$ErrorActionPreference = 'Stop'
++$ver   = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
++$root  = (Resolve-Path (Join-Path $ver '..\..\..')).Path
++$rtl   = Join-Path $root 'build_repo\rtl\video'
++$out   = Join-Path $PSScriptRoot 'logs\final-20261027'
++$build = Join-Path $PSScriptRoot 'vivado_build_final'
++New-Item -ItemType Directory -Force -Path $out, $build | Out-Null
++
++$xvlog = Join-Path $VivadoBin 'xvlog.bat'
++$xelab = Join-Path $VivadoBin 'xelab.bat'
++$xsim  = Join-Path $VivadoBin 'xsim.bat'
++
++$common = @(
++    (Join-Path $rtl 'line_buffer_3x3.v'),
++    (Join-Path $rtl 'debayer.v'),
++    (Join-Path $rtl 'grayscale.v'),
++    (Join-Path $rtl 'sort3.v'),
++    (Join-Path $rtl 'video_delay.v'),
++    (Join-Path $ver 'median3x3.v'),
++    (Join-Path $ver 'gaussian5x5.v'),
++    (Join-Path $ver 'gaussian3x3.v'),
++    (Join-Path $ver 'sobel.v'),
++    (Join-Path $ver 'scharr.v'),
++    (Join-Path $ver 'nms3x3.v'),
++    (Join-Path $ver 'canny_nms.v'),
++    (Join-Path $ver 'canny_nms_interp.v'),
++    (Join-Path $ver 'canny_hysteresis.v'),
++    (Join-Path $ver 'edge_link3x3.v'),
++    (Join-Path $ver 'alg_top.v'),
++    (Join-Path $ver 'camera_line_unpack.v'),
++    (Join-Path $ver 'video_frame_store.v'),
++    (Join-Path $ver 'edge_frame_store.v'),
++    (Join-Path $ver 'rgb565_preview_store.v'),
++    (Join-Path $ver 'vga_timing.v'),
++    (Join-Path $ver 'measurement_timing.v')
++)
++
++$tests = @(
++    'tb_gaussian5x5',
++    'tb_canny_hysteresis',
++    'tb_gray_path',
++    'tb_camera_line_unpack_ram',
++    'tb_rgb565_preview_store',
++    'tb_video_frame_store_depth',
++    'tb_edge_frame_store_aligned',
++    'tb_canny_nms_interp',
++    'tb_alg_canny',
++    'tb_canny_chain',
++    'tb_alg_sobel',
++    'tb_gaussian_pos',
++    'tb_measurement_timing'
++)
++
++$sources = @($common)
++foreach ($test in $tests) {
++    $sources += (Join-Path $PSScriptRoot ($test + '.v'))
++}
++
++Push-Location $build
++try {
++    & $xvlog @sources *> (Join-Path $out 'suite.xvlog.log')
++    if ($LASTEXITCODE -ne 0) { throw "xvlog failed" }
++
++    & $xvlog -version *> (Join-Path $out 'simulator_version.txt')
++    Set-Content -LiteralPath (Join-Path $out 'run_metadata.txt') -Encoding UTF8 -Value @(
++        "Run date: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss K')",
++        "Simulator: Vivado Simulator 2022.2",
++        "Version directory: $ver",
++        "Clock for unit tests: testbench-defined"
++    )
++
++    $hashLines = foreach ($f in $sources) {
++        $h = (Get-FileHash -LiteralPath $f -Algorithm SHA256).Hash
++        "$h  $f"
++    }
++    Set-Content -LiteralPath (Join-Path $out 'source_sha256.txt') -Encoding UTF8 -Value $hashLines
++
++    $results = @()
++    foreach ($test in $tests) {
++        & $xelab $test -s $test -relax *> (Join-Path $out ($test + '.xelab.log'))
++        if ($LASTEXITCODE -ne 0) {
++            $results += [pscustomobject]@{Test=$test; Result='ELAB_FAIL'; Log=$test + '.xelab.log'}
++            continue
++        }
++
++        & $xsim $test -R *> (Join-Path $out ($test + '.log'))
++        $simExit = $LASTEXITCODE
++        $text = Get-Content -LiteralPath (Join-Path $out ($test + '.log')) -Raw
++        if ($simExit -eq 0 -and $text -match 'PASS:' -and $text -notmatch 'FAIL:') {
++            $result = 'PASS'
++        } else {
++            $result = 'FAIL'
++        }
++        $results += [pscustomobject]@{Test=$test; Result=$result; Log=$test + '.log'}
++    }
++
++    $results | Format-Table -AutoSize | Out-String |
++        Set-Content -LiteralPath (Join-Path $out 'summary.txt') -Encoding UTF8
++    $results | Export-Csv -LiteralPath (Join-Path $out 'summary.csv') -NoTypeInformation -Encoding UTF8
++    $results | Format-Table -AutoSize
++    if (($results | Where-Object Result -ne 'PASS').Count -ne 0) { exit 1 }
++} finally {
++    Pop-Location
++}
+

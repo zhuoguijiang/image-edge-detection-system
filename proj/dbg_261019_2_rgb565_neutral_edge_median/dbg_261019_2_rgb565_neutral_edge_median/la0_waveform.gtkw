@@ -1,0 +1,27 @@
+[dumpfile] "C:\Users\44805\AppData\Local\Temp\tmp0521bqer\la0tmp_waveform.vcd"
+[dumpfile_mtime] "Fri Oct 09 11:00:01 2026"
+[dumpfile_size] 65382
+[savefile] "G:\NJU\Codex_FPGA\proj\dbg_20260929_01\la0_waveform.gtkw"
+[timestart] 0
+[size] 1000 600
+[pos] -1 -1
+*0.000000 c 512 1536 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[signals_width] 126
+[sst_expanded] 1
+@22
+top.csi_valid
+top.csi_hsync
+top.csi_vsync
+top.csi_datatype[5:0]
+top.csi_word_count[15:0]
+top.pix_valid
+top.pix_de
+top.pix_data[7:0]
+top.cam_alive
+top.capture_ovf
+top.line_late
+top.dbg_fault_pix[4:0]
+top.dbg_sticky[4:0]
+top.dbg_t_hsync[15:0]
+top.dbg_lines_vsync[12:0]
+top.dbg_t_vsync[19:0]

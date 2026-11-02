@@ -1,0 +1,227 @@
+
+///////////////////////////////////
+// Efinity Synthesis Started 
+// Oct 23, 2026 16:41:05
+///////////////////////////////////
+
+[EFX-0010 VERI-ERROR] syntax error near 'strong' (VERI-1137) (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\canny_hysteresis.v:49)
+[EFX-0010 VERI-ERROR] SystemVerilog 2009 keyword 'strong' used in incorrect context (VERI-2344) (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\canny_hysteresis.v:49)
+[EFX-0010 VERI-ERROR] syntax error near 'strong' (VERI-1137) (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\canny_hysteresis.v:67)
+[EFX-0010 VERI-ERROR] SystemVerilog 2009 keyword 'strong' used in incorrect context (VERI-2344) (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\canny_hysteresis.v:67)
+[EFX-0010 VERI-ERROR] 'confirmed' is not declared (VERI-1128) (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\canny_hysteresis.v:67)
+[EFX-0010 VERI-ERROR] 'confirmed' is not declared (VERI-1128) (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\canny_hysteresis.v:70)
+[EFX-0010 VERI-ERROR] 'confirmed' is not declared (VERI-1128) (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\canny_hysteresis.v:87)
+[EFX-0010 VERI-ERROR] 'confirmed' is not declared (VERI-1128) (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\canny_hysteresis.v:100)
+[EFX-0010 VERI-ERROR] module 'canny_hysteresis' is ignored due to previous errors (VERI-1072) (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\canny_hysteresis.v:106)
+
+///////////////////////////////////
+// Efinity Synthesis Started 
+// Oct 23, 2026 16:41:55
+///////////////////////////////////
+
+[EFX-0010 VERI-ERROR] cannot find port 'i2c_any_nack' on instantiated module 'i2c_timing_ctrl_16bit' (VERI-1010) (C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\build_repo\proj\dbg_261019_2\system_dbg_top.v:262)
+[EFX-0021 ERROR] Elaboration of module 'system_dbg_top' failed. Please check previous error messages.
+
+///////////////////////////////////
+// Efinity Synthesis Started 
+// Oct 23, 2026 16:43:35
+///////////////////////////////////
+
+
+///////////////////////////////////
+// Efinity Synthesis Started 
+// Oct 23, 2026 16:48:13
+///////////////////////////////////
+
+
+///////////////////////////////////
+// Efinity Synthesis Started 
+// Oct 23, 2026 16:54:54
+///////////////////////////////////
+
+
+///////////////////////////////////
+// Efinity Synthesis Started 
+// Oct 23, 2026 17:10:16
+///////////////////////////////////
+
+
+///////////////////////////////////
+// Efinity Synthesis Started 
+// Oct 23, 2026 17:23:17
+///////////////////////////////////
+
+
+///////////////////////////////////
+// Efinity Synthesis Started 
+// Oct 23, 2026 17:32:57
+///////////////////////////////////
+
+
+///////////////////////////////////
+// Efinity Synthesis Started 
+// Oct 23, 2026 17:43:20
+///////////////////////////////////
+
+
+///////////////////////////////////
+// Efinity Synthesis Started 
+// Oct 23, 2026 17:45:08
+///////////////////////////////////
+
+
+///////////////////////////////////
+// Efinity Synthesis Started 
+// Oct 23, 2026 17:50:12
+///////////////////////////////////
+
+
+///////////////////////////////////
+// Efinity Synthesis Started 
+// Oct 23, 2026 19:10:31
+///////////////////////////////////
+
+
+///////////////////////////////////
+// Efinity Synthesis Started 
+// Oct 24, 2026 15:46:50
+///////////////////////////////////
+
+
+///////////////////////////////////
+// Efinity Synthesis Started 
+// Oct 24, 2026 15:55:14
+///////////////////////////////////
+
+
+///////////////////////////////////
+// Efinity Synthesis Started 
+// Oct 24, 2026 16:04:32
+///////////////////////////////////
+
+
+///////////////////////////////////
+// Efinity Synthesis Started 
+// Oct 24, 2026 16:25:38
+///////////////////////////////////
+
+
+///////////////////////////////////
+// Efinity Synthesis Started 
+// Oct 24, 2026 16:34:47
+///////////////////////////////////
+
+
+///////////////////////////////////
+// Efinity Synthesis Started 
+// Oct 24, 2026 16:53:31
+///////////////////////////////////
+
+
+///////////////////////////////////
+// Efinity Synthesis Started 
+// Oct 25, 2026 15:29:33
+///////////////////////////////////
+
+
+///////////////////////////////////
+// Efinity Synthesis Started 
+// Oct 25, 2026 15:45:46
+///////////////////////////////////
+
+
+///////////////////////////////////
+// Efinity Synthesis Started 
+// Oct 25, 2026 15:53:48
+///////////////////////////////////
+
+
+///////////////////////////////////
+// Efinity Synthesis Started 
+// Oct 25, 2026 16:22:45
+///////////////////////////////////
+
+
+///////////////////////////////////
+// Efinity Synthesis Started 
+// Oct 25, 2026 16:24:37
+///////////////////////////////////
+
+
+///////////////////////////////////
+// Efinity Synthesis Started 
+// Oct 25, 2026 16:25:47
+///////////////////////////////////
+
+
+///////////////////////////////////
+// Efinity Synthesis Started 
+// Oct 25, 2026 16:27:54
+///////////////////////////////////
+
+
+///////////////////////////////////
+// Efinity Synthesis Started 
+// Oct 25, 2026 16:29:53
+///////////////////////////////////
+
+
+///////////////////////////////////
+// Efinity Synthesis Started 
+// Oct 25, 2026 16:32:18
+///////////////////////////////////
+
+
+///////////////////////////////////
+// Efinity Synthesis Started 
+// Oct 26, 2026 17:22:25
+///////////////////////////////////
+
+
+///////////////////////////////////
+// Efinity Synthesis Started 
+// Oct 26, 2026 18:48:05
+///////////////////////////////////
+
+
+///////////////////////////////////
+// Efinity Synthesis Started 
+// Oct 26, 2026 18:49:30
+///////////////////////////////////
+
+
+///////////////////////////////////
+// Efinity Synthesis Started 
+// Oct 26, 2026 18:53:52
+///////////////////////////////////
+
+
+///////////////////////////////////
+// Efinity Synthesis Started 
+// Oct 26, 2026 18:56:31
+///////////////////////////////////
+
+
+///////////////////////////////////
+// Efinity Synthesis Started 
+// Oct 27, 2026 13:58:28
+///////////////////////////////////
+
+
+///////////////////////////////////
+// Efinity Synthesis Started 
+// Oct 27, 2026 14:19:28
+///////////////////////////////////
+
+
+///////////////////////////////////
+// Efinity Synthesis Started 
+// Oct 27, 2026 14:21:34
+///////////////////////////////////
+
+
+///////////////////////////////////
+// Efinity Synthesis Started 
+// Oct 27, 2026 14:23:09
+///////////////////////////////////
+

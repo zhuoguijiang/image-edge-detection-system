@@ -1,0 +1,23 @@
+$date today $end
+$timescale 1 ns $end
+$scope module top $end
+$var wire 1 0 i2c_done $end
+$var wire 1 1 i2c_nack $end
+$var wire 9 2 i2c_index $end
+$upscope $end
+$enddefinitions $end
+#0
+$dumpvars
+x0
+x1
+bx 2
+$end
+#0 $dumpon
+10
+01
+b100001111 2
+#1023
+10
+01
+b100001111 2
+$end

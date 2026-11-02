@@ -1,0 +1,4 @@
+﻿Run date: 2026-10-27 14:17:03 +08:00
+Simulator: Vivado Simulator 2022.2
+Version directory: C:\Users\Lenovo\Documents\Codex\2026-10-21\e-new-dbg-261019-2-dbg\work\versions\rgb565_neutral_edge_median
+Clock for unit tests: testbench-defined

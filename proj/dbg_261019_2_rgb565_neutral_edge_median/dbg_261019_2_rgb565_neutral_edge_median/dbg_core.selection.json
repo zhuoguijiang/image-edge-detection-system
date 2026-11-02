@@ -1,0 +1,222 @@
+{
+    "session": {
+        "wizard": {
+            "capture_control": false,
+            "data_depth": 1024,
+            "input_pipeline": 1,
+            "jtag_user": "USER1",
+            "src": "elaborate",
+            "top_module": "system_dbg_top",
+            "selected_nets": [
+                {
+                    "name": "csi_valid",
+                    "width": 1,
+                    "clk_domain": "clk_pixel",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": []
+                },
+                {
+                    "name": "csi_hsync",
+                    "width": 1,
+                    "clk_domain": "clk_pixel",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": []
+                },
+                {
+                    "name": "csi_vsync",
+                    "width": 1,
+                    "clk_domain": "clk_pixel",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": []
+                },
+                {
+                    "name": "csi_datatype",
+                    "width": 6,
+                    "clk_domain": "clk_pixel",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [],
+                    "net_idx_left": 5,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "csi_word_count",
+                    "width": 16,
+                    "clk_domain": "clk_pixel",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [],
+                    "net_idx_left": 15,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "pix_valid",
+                    "width": 1,
+                    "clk_domain": "clk_pixel",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": []
+                },
+                {
+                    "name": "pix_de",
+                    "width": 1,
+                    "clk_domain": "clk_pixel",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": []
+                },
+                {
+                    "name": "pix_data",
+                    "width": 8,
+                    "clk_domain": "clk_pixel",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [],
+                    "net_idx_left": 7,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "cam_alive",
+                    "width": 1,
+                    "clk_domain": "clk_pixel",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": []
+                },
+                {
+                    "name": "capture_ovf",
+                    "width": 1,
+                    "clk_domain": "clk_pixel",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": []
+                },
+                {
+                    "name": "line_late",
+                    "width": 1,
+                    "clk_domain": "clk_pixel",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": []
+                },
+                {
+                    "name": "dbg_fault_pix",
+                    "width": 5,
+                    "clk_domain": "clk_pixel",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [],
+                    "net_idx_left": 4,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "dbg_sticky",
+                    "width": 5,
+                    "clk_domain": "clk_pixel",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [],
+                    "net_idx_left": 4,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "dbg_t_hsync",
+                    "width": 16,
+                    "clk_domain": "clk_pixel",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [],
+                    "net_idx_left": 15,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "dbg_lines_vsync",
+                    "width": 13,
+                    "clk_domain": "clk_pixel",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [],
+                    "net_idx_left": 12,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "dbg_t_vsync",
+                    "width": 20,
+                    "clk_domain": "clk_pixel",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [],
+                    "net_idx_left": 19,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "dbg_line_period_lat",
+                    "width": 16,
+                    "clk_domain": "clk_pixel",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [],
+                    "net_idx_left": 15,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "dbg_lines_frame_lat",
+                    "width": 13,
+                    "clk_domain": "clk_pixel",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [],
+                    "net_idx_left": 12,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "dbg_frame_period_lat",
+                    "width": 20,
+                    "clk_domain": "clk_pixel",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [],
+                    "net_idx_left": 19,
+                    "net_idx_right": 0
+                },
+                {
+                    "name": "dbg_vsync_bad",
+                    "width": 1,
+                    "clk_domain": "clk_pixel",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": []
+                },
+                {
+                    "name": "i2c_done",
+                    "width": 1,
+                    "clk_domain": "clk_sys",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": []
+                },
+                {
+                    "name": "i2c_nack",
+                    "width": 1,
+                    "clk_domain": "clk_sys",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": []
+                },
+                {
+                    "name": "i2c_index",
+                    "width": 9,
+                    "clk_domain": "clk_sys",
+                    "selected_probe_type": "DATA AND TRIGGER",
+                    "child": [],
+                    "path": [],
+                    "net_idx_left": 8,
+                    "net_idx_right": 0
+                }
+            ]
+        }
+    }
+}

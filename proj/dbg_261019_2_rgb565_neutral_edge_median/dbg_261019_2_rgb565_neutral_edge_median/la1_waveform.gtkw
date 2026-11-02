@@ -1,0 +1,14 @@
+[dumpfile] "C:\Users\44805\AppData\Local\Temp\tmppxtm675a\la1tmp_waveform.vcd"
+[dumpfile_mtime] "Fri Oct 09 10:48:48 2026"
+[dumpfile_size] 293
+[savefile] "G:\NJU\Codex_FPGA\proj\dbg_20260929_01\la1_waveform.gtkw"
+[timestart] 0
+[size] 1000 600
+[pos] -1 -1
+*0.000000 c 512 1536 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[signals_width] 126
+[sst_expanded] 1
+@22
+top.i2c_done
+top.i2c_nack
+top.i2c_index[8:0]
