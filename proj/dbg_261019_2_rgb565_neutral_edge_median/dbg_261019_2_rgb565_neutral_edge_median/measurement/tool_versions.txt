@@ -1,0 +1,9 @@
+Verification date: 2026-10-27
+Efinity: 2026.1.132.4.5
+Vivado Simulator: 2022.2
+FPGA: Efinix Titanium Ti60F225
+Top module: system_dbg_top
+Camera: SC2210, 640x480, 4-lane, RAW8, MIPI CSI-2
+Pixel clock: 25 MHz
+Display timing: 640x480 active, 800x525 total, calculated 59.52 Hz
+Build output: dbg_rgb565_neutral_edge_median.bit
